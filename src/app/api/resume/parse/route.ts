@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import pdf from "pdf-parse";
 
 import { getSession } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase-server";
@@ -21,7 +20,10 @@ export async function POST(req: NextRequest) {
 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-  const parsed = await pdf(buffer);
+  const pdfParseModule = await import("pdf-parse");
+  const pdfParse =
+    "default" in pdfParseModule ? pdfParseModule.default : pdfParseModule;
+  const parsed = await pdfParse(buffer);
 
   const prompt = `
 System: You are a resume parser. Extract key information. Return ONLY valid JSON, no other text.
