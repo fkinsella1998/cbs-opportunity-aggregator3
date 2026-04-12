@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/scrape/buildinnyc",
+      "schedule": "0 5 * * *"
+    }
+  ]
+}
