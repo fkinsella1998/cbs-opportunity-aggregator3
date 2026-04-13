@@ -8,13 +8,33 @@ export default function OpportunityCard({
 }: {
   opportunity: OpportunityWithMeta;
 }) {
-  if (!opportunity.id || opportunity.id === "undefined") {
-    return null;
-  }
+  const safeId =
+    opportunity.id && opportunity.id !== "undefined" ? opportunity.id : "preview";
+  const searchParams = new URLSearchParams();
+  if (opportunity.role_title) searchParams.set("role_title", opportunity.role_title);
+  if (opportunity.company_name)
+    searchParams.set("company_name", opportunity.company_name);
+  if (opportunity.description)
+    searchParams.set("description", opportunity.description);
+  if (opportunity.location) searchParams.set("location", opportunity.location);
+  if (opportunity.function) searchParams.set("function", opportunity.function);
+  if (opportunity.company_stage)
+    searchParams.set("company_stage", opportunity.company_stage);
+  if (opportunity.employment_type)
+    searchParams.set("employment_type", opportunity.employment_type);
+  if (opportunity.application_link)
+    searchParams.set("application_link", opportunity.application_link);
+  if (opportunity.application_deadline)
+    searchParams.set("application_deadline", opportunity.application_deadline);
+  if (opportunity.has_cbs_alumni)
+    searchParams.set("has_cbs_alumni", opportunity.has_cbs_alumni);
+  if (opportunity.source) searchParams.set("source", opportunity.source);
+  if (opportunity.went_live_at)
+    searchParams.set("went_live_at", opportunity.went_live_at);
 
   return (
     <Link
-      href={`/feed/${opportunity.id}`}
+      href={`/feed/${safeId}?${searchParams.toString()}`}
       className="block border-b border-border-subtle py-4 transition-colors hover:bg-[#0f0f0f]"
     >
       <div className="flex items-start justify-between gap-4">

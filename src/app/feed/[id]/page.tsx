@@ -7,27 +7,53 @@ import { supabaseServer } from "@/lib/supabase-server";
 
 export default async function OpportunityDetailPage({
   params,
+  searchParams,
 }: {
   params: { id: string };
+  searchParams?: Record<string, string | string[] | undefined>;
 }) {
-  if (!params.id || params.id === "undefined") {
-    return (
-      <div className="max-w-[600px] mx-auto animate-fade-in">
-        <p className="text-text-secondary">
-          This opportunity link is invalid. Please return to the feed.
-        </p>
-      </div>
-    );
+  const session = await getSession();
+  const isPreview =
+    !params.id || params.id === "preview" || params.id === "undefined";
+
+  const getParam = (key: string) => {
+    const value = searchParams?.[key];
+    return Array.isArray(value) ? value[0] : value;
+  };
+
+  const fallbackOpportunity = {
+    id: "preview",
+    role_title: getParam("role_title") ?? "Preview role",
+    company_name: getParam("company_name") ?? "Preview company",
+    function: getParam("function") ?? undefined,
+    company_stage: getParam("company_stage") ?? undefined,
+    employment_type: getParam("employment_type") ?? undefined,
+    location: getParam("location") ?? undefined,
+    description: getParam("description") ?? "Opportunity details coming soon.",
+    application_link: getParam("application_link") ?? "#",
+    application_deadline: getParam("application_deadline") ?? undefined,
+    has_cbs_alumni: (getParam("has_cbs_alumni") ?? "Unknown") as
+      | "Yes"
+      | "No"
+      | "Unknown",
+    source: getParam("source") ?? "CMC",
+    went_live_at: getParam("went_live_at") ?? new Date().toISOString(),
+  };
+
+  let opportunity = null;
+  let error = null;
+
+  if (!isPreview) {
+    const response = await supabaseServer
+      .from("opportunities")
+      .select("*")
+      .eq("id", params.id)
+      .single();
+    opportunity = response.data;
+    error = response.error;
   }
 
-  const session = await getSession();
-  const { data: opportunity, error } = await supabaseServer
-    .from("opportunities")
-    .select("*")
-    .eq("id", params.id)
-    .single();
-
-  if (error) {
+  if (error && !isPreview) {
     return (
       <div className="max-w-[600px] mx-auto animate-fade-in">
         <p className="text-text-secondary">
@@ -37,7 +63,9 @@ export default async function OpportunityDetailPage({
     );
   }
 
-  if (!opportunity) {
+  const resolvedOpportunity = opportunity ?? fallbackOpportunity;
+
+  if (!resolvedOpportunity) {
     return (
       <div className="max-w-[600px] mx-auto animate-fade-in">
         <p className="text-text-secondary">Opportunity not found.</p>
@@ -50,9 +78,9 @@ export default async function OpportunityDetailPage({
     supabaseServer
       .from("alumni")
       .select("id, first_name, last_name, title, linkedin_url, graduation_year")
-      .ilike("company_name", opportunity.company_name)
+      .ilike("company_name", resolvedOpportunity.company_name)
       .limit(10),
-    studentId
+    studentId && opportunity
       ? supabaseServer
           .from("bookmarks")
           .select("is_active")
@@ -60,7 +88,7 @@ export default async function OpportunityDetailPage({
           .eq("opportunity_id", params.id)
           .single()
       : Promise.resolve({ data: null }),
-    studentId
+    studentId && opportunity
       ? supabaseServer
           .from("applications")
           .select("id")
@@ -83,17 +111,17 @@ export default async function OpportunityDetailPage({
       </Link>
       <div className="mt-6">
         <h1 className="text-text text-2xl font-semibold">
-          {opportunity.role_title}
+          {resolvedOpportunity.role_title}
         </h1>
         <p className="text-text-secondary text-base">
-          {opportunity.company_name}
+          {resolvedOpportunity.company_name}
         </p>
         <div className="mt-4 flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-[0.08em] text-text-secondary">
           {[
-            opportunity.function,
-            opportunity.company_stage,
-            opportunity.employment_type,
-            opportunity.location,
+            resolvedOpportunity.function,
+            resolvedOpportunity.company_stage,
+            resolvedOpportunity.employment_type,
+            resolvedOpportunity.location,
           ]
             .filter(Boolean)
             .map((tag) => (
@@ -106,7 +134,7 @@ export default async function OpportunityDetailPage({
 
       <div className="mt-6">
         <a
-          href={opportunity.application_link}
+          href={resolvedOpportunity.application_link ?? "#"}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center justify-center bg-white text-black px-6 py-3 text-sm font-medium rounded"
@@ -117,7 +145,7 @@ export default async function OpportunityDetailPage({
 
       <div className="mt-4">
         <OpportunityActions
-          opportunityId={opportunity.id}
+          opportunityId={opportunity?.id ?? "preview"}
           initialBookmarked={bookmark?.is_active === true}
           initialApplied={!!application}
         />
@@ -152,15 +180,16 @@ export default async function OpportunityDetailPage({
           About the role
         </p>
         <p className="mt-3 text-text-secondary text-sm leading-7">
-          {opportunity.description}
+          {resolvedOpportunity.description}
         </p>
       </div>
 
       <div className="mt-8 text-xs font-mono text-text-tertiary">
-        Posted {timeAgo(opportunity.went_live_at)} · Via {opportunity.source}
-        {opportunity.application_deadline ? (
+        Posted {timeAgo(resolvedOpportunity.went_live_at)} · Via{" "}
+        {resolvedOpportunity.source}
+        {resolvedOpportunity.application_deadline ? (
           <span className="block">
-            {formatDeadline(opportunity.application_deadline)}
+            {formatDeadline(resolvedOpportunity.application_deadline)}
           </span>
         ) : null}
       </div>
