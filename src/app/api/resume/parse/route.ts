@@ -22,10 +22,10 @@ export async function POST(req: NextRequest) {
   const buffer = Buffer.from(arrayBuffer);
   const pdfParseModule = await import("pdf-parse");
   const pdfParse =
-    "default" in pdfParseModule ? pdfParseModule.default : pdfParseModule;
-  const parsed = await (pdfParse as (input: Buffer) => Promise<{ text: string }>)(
-    buffer,
-  );
+    (pdfParseModule as unknown as {
+      default: (input: Buffer) => Promise<{ text: string }>;
+    }).default ?? (pdfParseModule as unknown as (input: Buffer) => Promise<{ text: string }>);
+  const parsed = await pdfParse(buffer);
 
   const prompt = `
 System: You are a resume parser. Extract key information. Return ONLY valid JSON, no other text.
