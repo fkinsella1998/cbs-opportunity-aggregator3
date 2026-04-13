@@ -1,6 +1,8 @@
 import Link from "next/link";
 
+import OpportunityActions from "@/components/feed/OpportunityActions";
 import { formatDeadline, timeAgo } from "@/lib/dates";
+import { getSession } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase-server";
 
 export default async function OpportunityDetailPage({
@@ -8,11 +10,22 @@ export default async function OpportunityDetailPage({
 }: {
   params: { id: string };
 }) {
-  const { data: opportunity } = await supabaseServer
+  const session = await getSession();
+  const { data: opportunity, error } = await supabaseServer
     .from("opportunities")
     .select("*")
     .eq("id", params.id)
     .single();
+
+  if (error) {
+    return (
+      <div className="max-w-[600px] mx-auto animate-fade-in">
+        <p className="text-text-secondary">
+          Unable to load opportunity: {error.message}
+        </p>
+      </div>
+    );
+  }
 
   if (!opportunity) {
     return (
@@ -22,11 +35,33 @@ export default async function OpportunityDetailPage({
     );
   }
 
-  const { data: alumni } = await supabaseServer
-    .from("alumni")
-    .select("id, first_name, last_name, title, linkedin_url, graduation_year")
-    .ilike("company_name", opportunity.company_name)
-    .limit(10);
+  const studentId = session.student_id;
+  const [alumniRes, bookmarkRes, applicationRes] = await Promise.all([
+    supabaseServer
+      .from("alumni")
+      .select("id, first_name, last_name, title, linkedin_url, graduation_year")
+      .ilike("company_name", opportunity.company_name)
+      .limit(10),
+    studentId
+      ? supabaseServer
+          .from("bookmarks")
+          .select("is_active")
+          .eq("student_id", studentId)
+          .eq("opportunity_id", params.id)
+          .single()
+      : Promise.resolve({ data: null }),
+    studentId
+      ? supabaseServer
+          .from("applications")
+          .select("id")
+          .eq("student_id", studentId)
+          .eq("opportunity_id", params.id)
+          .single()
+      : Promise.resolve({ data: null }),
+  ]);
+  const alumni = alumniRes.data || [];
+  const bookmark = bookmarkRes.data;
+  const application = applicationRes.data;
 
   return (
     <div className="max-w-[600px] mx-auto animate-fade-in">
@@ -68,6 +103,14 @@ export default async function OpportunityDetailPage({
         >
           Apply now →
         </a>
+      </div>
+
+      <div className="mt-4">
+        <OpportunityActions
+          opportunityId={opportunity.id}
+          initialBookmarked={bookmark?.is_active === true}
+          initialApplied={!!application}
+        />
       </div>
 
       {alumni && alumni.length > 0 ? (
