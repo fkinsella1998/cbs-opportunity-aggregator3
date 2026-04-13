@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { buildMockOpportunities } from "@/lib/mock-opportunities";
 import { getSession } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase-server";
 
@@ -38,8 +39,31 @@ export async function GET(req: NextRequest) {
   if (stage.length > 0) query = query.in("company_stage", stage);
   if (type.length > 0) query = query.in("employment_type", type);
 
-  const { data: opportunities, count, error } = await query;
+  let { data: opportunities, count, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  const hasFilters =
+    industry.length > 0 ||
+    func.length > 0 ||
+    stage.length > 0 ||
+    type.length > 0 ||
+    alumniOnly ||
+    newThisWeek;
+
+  if (!hasFilters && (!count || count === 0)) {
+    const seed = buildMockOpportunities().map((opportunity) => ({
+      ...opportunity,
+      view_count: 0,
+      click_count: 0,
+      bookmark_count: 0,
+      application_count: 0,
+    }));
+    await supabaseServer.from("public.opportunities").insert(seed);
+    ({ data: opportunities, count, error } = await query);
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+  }
 
   const [bookmarksRes, applicationsRes] = await Promise.all([
     supabaseServer

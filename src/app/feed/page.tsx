@@ -1,6 +1,7 @@
 import EmptyFeed from "@/components/feed/EmptyFeed";
 import FilterBar from "@/components/feed/FilterBar";
 import OpportunityCard from "@/components/feed/OpportunityCard";
+import { buildMockOpportunities } from "@/lib/mock-opportunities";
 import { supabaseServer } from "@/lib/supabase-server";
 import type { OpportunityWithMeta } from "@/types";
 
@@ -12,7 +13,27 @@ export default async function FeedPage() {
     .order("went_live_at", { ascending: false })
     .limit(25);
 
-  const items: OpportunityWithMeta[] = (opportunities || []).map((opp) => ({
+  if (!opportunities || opportunities.length === 0) {
+    const seed = buildMockOpportunities().map((opportunity) => ({
+      ...opportunity,
+      view_count: 0,
+      click_count: 0,
+      bookmark_count: 0,
+      application_count: 0,
+    }));
+    await supabaseServer.from("public.opportunities").insert(seed);
+  }
+
+  const { data: refreshed } = opportunities?.length
+    ? { data: opportunities }
+    : await supabaseServer
+        .from("public.opportunities")
+        .select("*")
+        .eq("status", "Live")
+        .order("went_live_at", { ascending: false })
+        .limit(25);
+
+  const items: OpportunityWithMeta[] = (refreshed || []).map((opp) => ({
     ...opp,
     is_bookmarked: false,
     has_applied: false,
