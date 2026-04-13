@@ -21,10 +21,10 @@ export async function POST(req: NextRequest) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const pdfParseModule = await import("pdf-parse");
-  const pdfParse =
-    (pdfParseModule as unknown as {
-      default: (input: Buffer) => Promise<{ text: string }>;
-    }).default ?? (pdfParseModule as unknown as (input: Buffer) => Promise<{ text: string }>);
+  const pdfParse: (input: Buffer) => Promise<{ text: string }> = (
+    ((pdfParseModule as unknown as { default?: unknown }).default ??
+      pdfParseModule) as (input: Buffer) => Promise<{ text: string }>
+  );
   const parsed = await pdfParse(buffer);
 
   const prompt = `
