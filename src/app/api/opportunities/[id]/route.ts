@@ -8,6 +8,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
+  const isValidId = /^[0-9a-f-]{36}$/i.test(id ?? "");
+  if (!isValidId) {
+    return NextResponse.json({ error: "Invalid opportunity id" }, { status: 400 });
+  }
   const session = await getSession();
   if (!session.student_id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

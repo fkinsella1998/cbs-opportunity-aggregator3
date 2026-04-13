@@ -10,6 +10,17 @@ export default async function OpportunityDetailPage({
 }: {
   params: { id: string };
 }) {
+  const isValidId = /^[0-9a-f-]{36}$/i.test(params.id ?? "");
+  if (!isValidId) {
+    return (
+      <div className="max-w-[600px] mx-auto animate-fade-in">
+        <p className="text-text-secondary">
+          This opportunity link is invalid. Please return to the feed.
+        </p>
+      </div>
+    );
+  }
+
   const session = await getSession();
   const { data: opportunity, error } = await supabaseServer
     .from("opportunities")

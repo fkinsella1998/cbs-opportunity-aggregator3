@@ -43,7 +43,7 @@ export default async function FeedPage() {
         .limit(25);
 
   const items: OpportunityWithMeta[] = (refreshed || [])
-    .filter((opp) => Boolean(opp.id) && opp.id !== "undefined")
+    .filter((opp) => /^[0-9a-f-]{36}$/i.test(opp.id ?? ""))
     .map((opp) => ({
       ...opp,
       is_bookmarked: false,
