@@ -10,8 +10,7 @@ export default async function OpportunityDetailPage({
 }: {
   params: { id: string };
 }) {
-  const isValidId = /^[0-9a-f-]{36}$/i.test(params.id ?? "");
-  if (!isValidId) {
+  if (!params.id || params.id === "undefined") {
     return (
       <div className="max-w-[600px] mx-auto animate-fade-in">
         <p className="text-text-secondary">

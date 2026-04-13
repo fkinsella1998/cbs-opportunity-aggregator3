@@ -13,7 +13,7 @@ export default async function SavedPage() {
     .map((row) => row.opportunities as unknown as OpportunityWithMeta | null)
     .filter(
       (opp): opp is OpportunityWithMeta =>
-        /^[0-9a-f-]{36}$/i.test(opp?.id ?? ""),
+        Boolean(opp?.id) && opp?.id !== "undefined",
     )
     .map((opp) => ({
       ...opp,

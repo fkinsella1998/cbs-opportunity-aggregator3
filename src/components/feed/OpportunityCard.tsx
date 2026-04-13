@@ -8,8 +8,7 @@ export default function OpportunityCard({
 }: {
   opportunity: OpportunityWithMeta;
 }) {
-  const isValidId = /^[0-9a-f-]{36}$/i.test(opportunity.id ?? "");
-  if (!isValidId) {
+  if (!opportunity.id || opportunity.id === "undefined") {
     return null;
   }
 
