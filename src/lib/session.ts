@@ -1,8 +1,8 @@
-import { getIronSession, type IronSessionOptions } from "iron-session";
+import { getIronSession, type SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
 import type { SessionData } from "@/types";
 
-export const sessionOptions: IronSessionOptions = {
+export const sessionOptions: SessionOptions = {
   password: process.env.SESSION_SECRET ?? "change-me",
   cookieName: "cbs_session",
   cookieOptions: {
