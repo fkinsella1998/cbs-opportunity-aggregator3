@@ -13,9 +13,13 @@ export default async function FeedPage() {
     .order("went_live_at", { ascending: false })
     .limit(25);
 
-  const hasMissingId = (opportunities || []).some((opp) => !opp.id);
+  const hasMissingId = (opportunities || []).some(
+    (opp) => !opp.id || opp.id === "undefined",
+  );
   if (hasMissingId) {
     await supabaseServer.from("opportunities").delete().is("id", null);
+    await supabaseServer.from("opportunities").delete().eq("id", "undefined");
+    await supabaseServer.from("opportunities").delete().eq("id", "");
   }
 
   if (!opportunities || opportunities.length === 0 || hasMissingId) {
@@ -39,7 +43,7 @@ export default async function FeedPage() {
         .limit(25);
 
   const items: OpportunityWithMeta[] = (refreshed || [])
-    .filter((opp) => Boolean(opp.id))
+    .filter((opp) => Boolean(opp.id) && opp.id !== "undefined")
     .map((opp) => ({
       ...opp,
       is_bookmarked: false,

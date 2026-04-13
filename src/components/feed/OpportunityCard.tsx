@@ -8,7 +8,7 @@ export default function OpportunityCard({
 }: {
   opportunity: OpportunityWithMeta;
 }) {
-  if (!opportunity.id) {
+  if (!opportunity.id || opportunity.id === "undefined") {
     return null;
   }
 

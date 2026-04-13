@@ -50,7 +50,15 @@ export async function GET(req: NextRequest) {
     alumniOnly ||
     newThisWeek;
 
-  if (!hasFilters && (!count || count === 0)) {
+  const hasBadIds = (opportunities || []).some(
+    (opp) => !opp.id || opp.id === "undefined",
+  );
+  if (!hasFilters && (!count || count === 0 || hasBadIds)) {
+    if (hasBadIds) {
+      await supabaseServer.from("opportunities").delete().is("id", null);
+      await supabaseServer.from("opportunities").delete().eq("id", "undefined");
+      await supabaseServer.from("opportunities").delete().eq("id", "");
+    }
     const seed = buildMockOpportunities().map((opportunity) => ({
       ...opportunity,
       view_count: 0,
