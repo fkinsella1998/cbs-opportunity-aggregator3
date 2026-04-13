@@ -13,9 +13,9 @@ export default function Home() {
         <p className="text-text-secondary text-sm">
           Find non-OCR roles with alumni visibility and a single feed.
         </p>
-        <Button asChild className="w-full">
-          <Link href="/login">Enter with CBS PIN →</Link>
-        </Button>
+        <Link href="/login" className="w-full">
+          <Button className="w-full">Enter with CBS PIN →</Button>
+        </Link>
       </div>
     </main>
   );
