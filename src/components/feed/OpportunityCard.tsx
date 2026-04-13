@@ -8,6 +8,10 @@ export default function OpportunityCard({
 }: {
   opportunity: OpportunityWithMeta;
 }) {
+  if (!opportunity.id) {
+    return null;
+  }
+
   return (
     <Link
       href={`/feed/${opportunity.id}`}

@@ -11,7 +11,7 @@ export default async function SavedPage() {
 
   const items: OpportunityWithMeta[] = (bookmarks || [])
     .map((row) => row.opportunities as unknown as OpportunityWithMeta | null)
-    .filter((opp): opp is OpportunityWithMeta => Boolean(opp))
+    .filter((opp): opp is OpportunityWithMeta => Boolean(opp?.id))
     .map((opp) => ({
       ...opp,
       is_bookmarked: true,

@@ -13,7 +13,12 @@ export default async function FeedPage() {
     .order("went_live_at", { ascending: false })
     .limit(25);
 
-  if (!opportunities || opportunities.length === 0) {
+  const hasMissingId = (opportunities || []).some((opp) => !opp.id);
+  if (hasMissingId) {
+    await supabaseServer.from("opportunities").delete().is("id", null);
+  }
+
+  if (!opportunities || opportunities.length === 0 || hasMissingId) {
     const seed = buildMockOpportunities().map((opportunity) => ({
       ...opportunity,
       view_count: 0,
@@ -36,10 +41,10 @@ export default async function FeedPage() {
   const items: OpportunityWithMeta[] = (refreshed || [])
     .filter((opp) => Boolean(opp.id))
     .map((opp) => ({
-    ...opp,
-    is_bookmarked: false,
-    has_applied: false,
-  }));
+      ...opp,
+      is_bookmarked: false,
+      has_applied: false,
+    }));
 
   return (
     <div className="animate-fade-in">
