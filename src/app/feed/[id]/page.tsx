@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import OpportunityActions from "@/components/feed/OpportunityActions";
 import { formatDeadline, timeAgo } from "@/lib/dates";
+import { buildMockOpportunities } from "@/lib/mock-opportunities";
 import { getSession } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase-server";
 
@@ -21,24 +22,26 @@ export default async function OpportunityDetailPage({
     return Array.isArray(value) ? value[0] : value;
   };
 
-  const fallbackOpportunity = {
+  const queryFallbackOpportunity = {
     id: "preview",
-    role_title: getParam("role_title") ?? "Preview role",
-    company_name: getParam("company_name") ?? "Preview company",
+    role_title: getParam("role_title") ?? undefined,
+    company_name: getParam("company_name") ?? undefined,
     function: getParam("function") ?? undefined,
     company_stage: getParam("company_stage") ?? undefined,
     employment_type: getParam("employment_type") ?? undefined,
     location: getParam("location") ?? undefined,
-    description: getParam("description") ?? "Opportunity details coming soon.",
-    application_link: getParam("application_link") ?? "#",
+    description: getParam("description") ?? undefined,
+    application_link: getParam("application_link") ?? undefined,
     application_deadline: getParam("application_deadline") ?? undefined,
-    has_cbs_alumni: (getParam("has_cbs_alumni") ?? "Unknown") as
+    has_cbs_alumni: (getParam("has_cbs_alumni") ?? undefined) as
       | "Yes"
       | "No"
-      | "Unknown",
-    source: getParam("source") ?? "CMC",
-    went_live_at: getParam("went_live_at") ?? new Date().toISOString(),
+      | "Unknown"
+      | undefined,
+    source: getParam("source") ?? undefined,
+    went_live_at: getParam("went_live_at") ?? undefined,
   };
+  const mockOpportunity = buildMockOpportunities()[0] ?? {};
 
   let opportunity = null;
   let error = null;
@@ -63,7 +66,27 @@ export default async function OpportunityDetailPage({
     );
   }
 
-  const resolvedOpportunity = opportunity ?? fallbackOpportunity;
+  const resolvedOpportunity = opportunity ?? {
+    ...mockOpportunity,
+    ...queryFallbackOpportunity,
+    id: "preview",
+    role_title: queryFallbackOpportunity.role_title ?? mockOpportunity.role_title ?? "Preview role",
+    company_name:
+      queryFallbackOpportunity.company_name ?? mockOpportunity.company_name ?? "Preview company",
+    description:
+      queryFallbackOpportunity.description ??
+      mockOpportunity.description ??
+      "Opportunity details coming soon.",
+    application_link:
+      queryFallbackOpportunity.application_link ??
+      mockOpportunity.application_link ??
+      "#",
+    went_live_at:
+      queryFallbackOpportunity.went_live_at ??
+      mockOpportunity.went_live_at ??
+      new Date().toISOString(),
+    source: queryFallbackOpportunity.source ?? mockOpportunity.source ?? "CMC",
+  };
 
   if (!resolvedOpportunity) {
     return (
@@ -98,6 +121,25 @@ export default async function OpportunityDetailPage({
       : Promise.resolve({ data: null }),
   ]);
   const alumni = alumniRes.data || [];
+  const mockAlumni = [
+    {
+      id: "preview-alum-1",
+      first_name: "Jordan",
+      last_name: "Lee",
+      title: "Senior Product Manager",
+      linkedin_url: "https://www.linkedin.com/",
+      graduation_year: 2020,
+    },
+    {
+      id: "preview-alum-2",
+      first_name: "Avery",
+      last_name: "Patel",
+      title: "Investment Associate",
+      linkedin_url: "https://www.linkedin.com/",
+      graduation_year: 2019,
+    },
+  ];
+  const alumniList = alumni.length > 0 ? alumni : mockAlumni;
   const bookmark = bookmarkRes.data;
   const application = applicationRes.data;
 
@@ -151,14 +193,14 @@ export default async function OpportunityDetailPage({
         />
       </div>
 
-      {alumni && alumni.length > 0 ? (
+      {alumniList.length > 0 ? (
         <>
           <div className="mt-8 border-t border-border-subtle pt-6">
             <p className="font-mono text-xs tracking-[0.2em] text-text-tertiary uppercase">
               CBS Alumni here
             </p>
             <ul className="mt-3 space-y-2 text-text-secondary text-sm">
-              {alumni.map((alum) => (
+              {alumniList.map((alum) => (
                 <li key={alum.id}>
                   {alum.first_name} {alum.last_name} · {alum.title} · ‘
                   {String(alum.graduation_year).slice(-2)} ·{" "}
