@@ -106,7 +106,14 @@ export default function OnboardingPage() {
         className="mx-auto w-full max-w-[520px] space-y-10 animate-fade-in"
       >
         <div>
-          <p className="text-text-tertiary text-sm">
+          <button
+            type="button"
+            onClick={() => router.push("/feed")}
+            className="text-text-tertiary text-xs underline underline-offset-2"
+          >
+            ← Back to feed
+          </button>
+          <p className="text-text-tertiary text-sm mt-4">
             Welcome{studentName ? `, ${studentName}` : ""}
           </p>
           <h1 className="text-text text-xl font-medium mt-2">Set up your profile</h1>

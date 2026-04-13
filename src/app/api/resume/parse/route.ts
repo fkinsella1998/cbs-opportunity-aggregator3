@@ -73,7 +73,7 @@ User: ${parsed.text}
     .getPublicUrl(storageData.path);
 
   await supabaseServer
-    .from("profiles")
+    .from("public.profiles")
     .update({
       resume_url: publicUrl.publicUrl,
       resume_text: parsed.text,

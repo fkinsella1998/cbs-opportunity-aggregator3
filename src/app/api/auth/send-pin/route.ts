@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   const normalized = email.toLowerCase().trim();
   const { data: student } = await supabase
-    .from("students")
+    .from("public.students")
     .select("id, first_name, email")
     .eq("email", normalized)
     .single();
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     student ??
     (
       await supabase
-        .from("students")
+        .from("public.students")
         .insert({
           email: normalized,
           first_name: "CBS",
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
   await supabase
-    .from("students")
+    .from("public.students")
     .update({ pin_hash: pinHash, pin_expires_at: expiresAt })
     .eq("id", studentRecord.id);
 

@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   const offset = (page - 1) * PAGE_SIZE;
 
   let query = supabaseServer
-    .from("opportunities")
+    .from("public.opportunities")
     .select("*", { count: "exact" })
     .eq("status", "Live")
     .order("went_live_at", { ascending: false })
@@ -43,12 +43,12 @@ export async function GET(req: NextRequest) {
 
   const [bookmarksRes, applicationsRes] = await Promise.all([
     supabaseServer
-      .from("bookmarks")
+      .from("public.bookmarks")
       .select("opportunity_id")
       .eq("student_id", session.student_id)
       .eq("is_active", true),
     supabaseServer
-      .from("applications")
+      .from("public.applications")
       .select("opportunity_id")
       .eq("student_id", session.student_id),
   ]);

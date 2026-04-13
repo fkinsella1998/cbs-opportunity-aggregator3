@@ -9,6 +9,7 @@ const navItems = [
   { href: "/feed", label: "Feed" },
   { href: "/saved", label: "Saved" },
   { href: "/post", label: "Post" },
+  { href: "/onboarding", label: "Profile" },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {

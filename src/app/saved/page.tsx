@@ -5,7 +5,7 @@ import type { OpportunityWithMeta } from "@/types";
 
 export default async function SavedPage() {
   const { data: bookmarks } = await supabaseServer
-    .from("bookmarks")
+    .from("public.bookmarks")
     .select("opportunities(*)")
     .eq("is_active", true);
 

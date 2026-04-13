@@ -14,7 +14,7 @@ export async function GET(
   }
 
   const { data: opportunity } = await supabaseServer
-    .from("opportunities")
+    .from("public.opportunities")
     .select("*")
     .eq("id", id)
     .eq("status", "Live")
@@ -24,23 +24,23 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  supabaseServer.rpc("increment_view_count", { opp_id: id });
+  supabaseServer.rpc("public.increment_view_count", { opp_id: id });
 
   const { data: alumni } = await supabaseServer
-    .from("alumni")
+    .from("public.alumni")
     .select("id, first_name, last_name, title, linkedin_url, graduation_year")
     .ilike("company_name", opportunity.company_name)
     .limit(10);
 
   const [bmRes, appRes] = await Promise.all([
     supabaseServer
-      .from("bookmarks")
+      .from("public.bookmarks")
       .select("is_active")
       .eq("student_id", session.student_id)
       .eq("opportunity_id", id)
       .single(),
     supabaseServer
-      .from("applications")
+      .from("public.applications")
       .select("id")
       .eq("student_id", session.student_id)
       .eq("opportunity_id", id)

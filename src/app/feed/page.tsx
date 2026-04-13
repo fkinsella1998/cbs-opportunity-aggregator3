@@ -6,7 +6,7 @@ import type { OpportunityWithMeta } from "@/types";
 
 export default async function FeedPage() {
   const { data: opportunities } = await supabaseServer
-    .from("opportunities")
+    .from("public.opportunities")
     .select("*")
     .eq("status", "Live")
     .order("went_live_at", { ascending: false })

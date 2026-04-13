@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   const normalized = email.toLowerCase().trim();
   const { data: student } = await supabase
-    .from("students")
+    .from("public.students")
     .select(
       "id, email, first_name, last_name, pin_hash, pin_expires_at, onboarding_done",
     )
@@ -46,12 +46,12 @@ export async function POST(req: NextRequest) {
   }
 
   await supabase
-    .from("students")
+    .from("public.students")
     .update({ pin_hash: null, pin_expires_at: null })
     .eq("id", student.id);
 
   const token = crypto.randomBytes(32).toString("hex");
-  await supabase.from("sessions").insert({
+  await supabase.from("public.sessions").insert({
     student_id: student.id,
     token,
     expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),

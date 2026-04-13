@@ -6,7 +6,7 @@ import AppShell from "@/components/layout/AppShell";
 
 export default function ClientShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const shouldWrap = pathname !== "/login" && pathname !== "/onboarding";
+  const shouldWrap = pathname !== "/login";
 
   return shouldWrap ? <AppShell>{children}</AppShell> : children;
 }
