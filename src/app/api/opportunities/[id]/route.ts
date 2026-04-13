@@ -5,8 +5,9 @@ import { supabaseServer } from "@/lib/supabase-server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const session = await getSession();
   if (!session.student_id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,7 +16,7 @@ export async function GET(
   const { data: opportunity } = await supabaseServer
     .from("opportunities")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("status", "Live")
     .single();
 
@@ -23,7 +24,7 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  supabaseServer.rpc("increment_view_count", { opp_id: params.id });
+  supabaseServer.rpc("increment_view_count", { opp_id: id });
 
   const { data: alumni } = await supabaseServer
     .from("alumni")
@@ -36,13 +37,13 @@ export async function GET(
       .from("bookmarks")
       .select("is_active")
       .eq("student_id", session.student_id)
-      .eq("opportunity_id", params.id)
+      .eq("opportunity_id", id)
       .single(),
     supabaseServer
       .from("applications")
       .select("id")
       .eq("student_id", session.student_id)
-      .eq("opportunity_id", params.id)
+      .eq("opportunity_id", id)
       .single(),
   ]);
 

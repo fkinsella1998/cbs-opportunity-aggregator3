@@ -4,12 +4,13 @@ import { supabaseServer } from "@/lib/supabase-server";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: company } = await supabaseServer
     .from("companies")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!company) {
