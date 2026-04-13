@@ -20,10 +20,10 @@ const seedData: Omit<
   location: "New York, NY",
   description: baseDescription,
   application_link: "https://example.com/jobs/helioshare",
-  application_deadline: null,
+  application_deadline: undefined,
   has_cbs_alumni: "Yes",
   source: "CMC",
-  source_url: null,
+  source_url: undefined,
   status: "Live",
 };
 
