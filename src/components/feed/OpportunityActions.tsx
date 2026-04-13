@@ -13,6 +13,7 @@
    initialBookmarked: boolean;
    initialApplied: boolean;
  }) {
+  const isPreview = opportunityId === "preview";
    const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
    const [hasApplied, setHasApplied] = useState(initialApplied);
    const [busy, setBusy] = useState<"bookmark" | "apply" | null>(null);
@@ -47,10 +48,20 @@
 
    return (
      <div className="flex flex-wrap gap-3">
-       <Button type="button" variant="ghost" onClick={toggleBookmark} disabled={!!busy}>
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={toggleBookmark}
+        disabled={!!busy || isPreview}
+      >
          {isBookmarked ? "Bookmarked" : "Bookmark"}
        </Button>
-       <Button type="button" variant="ghost" onClick={toggleApplied} disabled={!!busy}>
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={toggleApplied}
+        disabled={!!busy || isPreview}
+      >
          {hasApplied ? "Application recorded" : "I applied"}
        </Button>
      </div>
