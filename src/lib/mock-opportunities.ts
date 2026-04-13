@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 import type { Opportunity } from "@/types";
 
 const baseDescription =
@@ -29,9 +31,17 @@ const seedData: Omit<
 
 export function buildMockOpportunities(): Partial<Opportunity>[] {
   const now = new Date().toISOString();
+  const makeOpportunity = (
+    overrides: Partial<Opportunity>,
+  ): Partial<Opportunity> => ({
+    ...seedData,
+    id: crypto.randomUUID(),
+    went_live_at: now,
+    ...overrides,
+  });
+
   return [
-    {
-      ...seedData,
+    makeOpportunity({
       company_name: "HelioShare",
       role_title: "Growth Strategy Intern",
       function: "Strategy",
@@ -39,10 +49,8 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Internship",
       location: "New York, NY",
       application_link: "https://example.com/jobs/helioshare",
-      went_live_at: now,
-    },
-    {
-      ...seedData,
+    }),
+    makeOpportunity({
       company_name: "Altara Capital",
       role_title: "Investment Analyst",
       function: "Finance",
@@ -50,11 +58,9 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "New York, NY",
       application_link: "https://example.com/jobs/altara",
-      went_live_at: now,
       has_cbs_alumni: "Unknown",
-    },
-    {
-      ...seedData,
+    }),
+    makeOpportunity({
       company_name: "NorthBridge Health",
       role_title: "Product Manager, Digital Health",
       function: "Product",
@@ -62,10 +68,8 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "Boston, MA",
       application_link: "https://example.com/jobs/northbridge",
-      went_live_at: now,
-    },
-    {
-      ...seedData,
+    }),
+    makeOpportunity({
       company_name: "Quanta Commerce",
       role_title: "AI Partnerships Associate",
       function: "Business Development",
@@ -73,10 +77,8 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "Remote",
       application_link: "https://example.com/jobs/quanta",
-      went_live_at: now,
-    },
-    {
-      ...seedData,
+    }),
+    makeOpportunity({
       company_name: "Summit Mobility",
       role_title: "Operations & Strategy Intern",
       function: "Operations",
@@ -84,11 +86,9 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Internship",
       location: "San Francisco, CA",
       application_link: "https://example.com/jobs/summit",
-      went_live_at: now,
       has_cbs_alumni: "No",
-    },
-    {
-      ...seedData,
+    }),
+    makeOpportunity({
       company_name: "Arcadia Retail",
       role_title: "Merchandising Analyst",
       function: "Analytics",
@@ -96,10 +96,8 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "Chicago, IL",
       application_link: "https://example.com/jobs/arcadia",
-      went_live_at: now,
-    },
-    {
-      ...seedData,
+    }),
+    makeOpportunity({
       company_name: "Bluecrest Energy",
       role_title: "Sustainability Associate",
       function: "Sustainability",
@@ -107,11 +105,9 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "Houston, TX",
       application_link: "https://example.com/jobs/bluecrest",
-      went_live_at: now,
       has_cbs_alumni: "Unknown",
-    },
-    {
-      ...seedData,
+    }),
+    makeOpportunity({
       company_name: "Vista Labs",
       role_title: "Product Marketing Manager",
       function: "Marketing",
@@ -119,7 +115,6 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "Remote",
       application_link: "https://example.com/jobs/vista",
-      went_live_at: now,
-    },
+    }),
   ];
 }

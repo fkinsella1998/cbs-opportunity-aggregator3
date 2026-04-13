@@ -33,7 +33,9 @@ export default async function FeedPage() {
         .order("went_live_at", { ascending: false })
         .limit(25);
 
-  const items: OpportunityWithMeta[] = (refreshed || []).map((opp) => ({
+  const items: OpportunityWithMeta[] = (refreshed || [])
+    .filter((opp) => Boolean(opp.id))
+    .map((opp) => ({
     ...opp,
     is_bookmarked: false,
     has_applied: false,
