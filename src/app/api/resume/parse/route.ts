@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase-server";
 
+export const runtime = "nodejs";
+
 const OPENAI_MODEL = "gpt-4o-mini";
 
 export async function POST(req: NextRequest) {

@@ -75,9 +75,7 @@ export default function OnboardingPage() {
     });
 
     if (!parseRes.ok) {
-      setError("Resume parsing failed. Try again.");
-      setLoading(false);
-      return;
+      setError("Resume parsing failed. Continuing without parsing.");
     }
 
     const profileRes = await fetch("/api/profile", {
