@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const payload = await req.json();
 
   const { data: contributor } = await supabaseServer
-    .from("public.contributors")
+    .from("contributors")
     .select("id, requires_approval, source_tag")
     .eq("email", session.email)
     .single();
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   }
 
   const status = contributor.requires_approval ? "Pending" : "Live";
-  const { error } = await supabaseServer.from("public.opportunities").insert({
+  const { error } = await supabaseServer.from("opportunities").insert({
     ...payload,
     source: contributor.source_tag,
     contributor_id: contributor.id,

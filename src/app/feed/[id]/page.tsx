@@ -9,7 +9,7 @@ export default async function OpportunityDetailPage({
   params: { id: string };
 }) {
   const { data: opportunity } = await supabaseServer
-    .from("public.opportunities")
+    .from("opportunities")
     .select("*")
     .eq("id", params.id)
     .single();
@@ -23,7 +23,7 @@ export default async function OpportunityDetailPage({
   }
 
   const { data: alumni } = await supabaseServer
-    .from("public.alumni")
+    .from("alumni")
     .select("id, first_name, last_name, title, linkedin_url, graduation_year")
     .ilike("company_name", opportunity.company_name)
     .limit(10);

@@ -7,7 +7,7 @@ import type { OpportunityWithMeta } from "@/types";
 
 export default async function FeedPage() {
   const { data: opportunities } = await supabaseServer
-    .from("public.opportunities")
+    .from("opportunities")
     .select("*")
     .eq("status", "Live")
     .order("went_live_at", { ascending: false })
@@ -21,13 +21,13 @@ export default async function FeedPage() {
       bookmark_count: 0,
       application_count: 0,
     }));
-    await supabaseServer.from("public.opportunities").insert(seed);
+    await supabaseServer.from("opportunities").insert(seed);
   }
 
   const { data: refreshed } = opportunities?.length
     ? { data: opportunities }
     : await supabaseServer
-        .from("public.opportunities")
+        .from("opportunities")
         .select("*")
         .eq("status", "Live")
         .order("went_live_at", { ascending: false })

@@ -8,7 +8,7 @@ export default async function CompanyPage({
   params: { id: string };
 }) {
   const { data: company } = await supabaseServer
-    .from("public.companies")
+    .from("companies")
     .select("*")
     .eq("id", params.id)
     .single();
@@ -23,22 +23,22 @@ export default async function CompanyPage({
 
   const [newsRes, alumniRes, skillsRes, jobsRes] = await Promise.all([
     supabaseServer
-      .from("public.company_news")
+      .from("company_news")
       .select("*")
       .eq("company_id", company.id)
       .order("date", { ascending: false })
       .limit(5),
     supabaseServer
-      .from("public.alumni")
+      .from("alumni")
       .select("id, first_name, last_name, title, graduation_year, linkedin_url")
       .ilike("company_name", company.name)
       .limit(8),
     supabaseServer
-      .from("public.skills")
+      .from("skills")
       .select("skill")
       .eq("company_id", company.id),
     supabaseServer
-      .from("public.opportunities")
+      .from("opportunities")
       .select("id, role_title, application_link")
       .eq("company_name", company.name)
       .limit(5),
@@ -46,7 +46,7 @@ export default async function CompanyPage({
 
   const skills = skillsRes.data || [];
   const { data: courses } = await supabaseServer
-    .from("public.courses")
+    .from("courses")
     .select("course_code, course_title, skill")
     .in(
       "skill",

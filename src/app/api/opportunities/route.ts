@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   const offset = (page - 1) * PAGE_SIZE;
 
   let query = supabaseServer
-    .from("public.opportunities")
+    .from("opportunities")
     .select("*", { count: "exact" })
     .eq("status", "Live")
     .order("went_live_at", { ascending: false })
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
       bookmark_count: 0,
       application_count: 0,
     }));
-    await supabaseServer.from("public.opportunities").insert(seed);
+    await supabaseServer.from("opportunities").insert(seed);
     ({ data: opportunities, count, error } = await query);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -67,12 +67,12 @@ export async function GET(req: NextRequest) {
 
   const [bookmarksRes, applicationsRes] = await Promise.all([
     supabaseServer
-      .from("public.bookmarks")
+      .from("bookmarks")
       .select("opportunity_id")
       .eq("student_id", session.student_id)
       .eq("is_active", true),
     supabaseServer
-      .from("public.applications")
+      .from("applications")
       .select("opportunity_id")
       .eq("student_id", session.student_id),
   ]);

@@ -10,7 +10,7 @@ export async function GET() {
   }
 
   const { data: profile } = await supabaseServer
-    .from("public.profiles")
+    .from("profiles")
     .select("*")
     .eq("student_id", session.student_id)
     .single();
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   }
 
   const payload = await req.json();
-  const { error } = await supabaseServer.from("public.profiles").upsert(
+  const { error } = await supabaseServer.from("profiles").upsert(
     {
       student_id: session.student_id,
       ...payload,
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   }
 
   await supabaseServer
-    .from("public.students")
+    .from("students")
     .update({ onboarding_done: true })
     .eq("id", session.student_id);
 

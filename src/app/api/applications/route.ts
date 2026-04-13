@@ -15,25 +15,25 @@ export async function POST(req: NextRequest) {
   }
 
   const { data: existing } = await supabaseServer
-    .from("public.applications")
+    .from("applications")
     .select("id")
     .eq("student_id", session.student_id)
     .eq("opportunity_id", opportunity_id)
     .single();
 
   if (existing) {
-    await supabaseServer.from("public.applications").delete().eq("id", existing.id);
-    await supabaseServer.rpc("public.decrement_application_count", {
+    await supabaseServer.from("applications").delete().eq("id", existing.id);
+    await supabaseServer.rpc("decrement_application_count", {
       opp_id: opportunity_id,
     });
     return NextResponse.json({ has_applied: false });
   }
 
-  await supabaseServer.from("public.applications").insert({
+  await supabaseServer.from("applications").insert({
     student_id: session.student_id,
     opportunity_id,
   });
-  await supabaseServer.rpc("public.increment_application_count", {
+  await supabaseServer.rpc("increment_application_count", {
     opp_id: opportunity_id,
   });
 

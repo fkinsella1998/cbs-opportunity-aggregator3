@@ -10,7 +10,7 @@ export async function GET() {
   }
 
   const { data, error } = await supabaseServer
-    .from("public.bookmarks")
+    .from("bookmarks")
     .select("opportunity_id, opportunities(*)")
     .eq("student_id", session.student_id)
     .eq("is_active", true);
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { data: existing } = await supabaseServer
-    .from("public.bookmarks")
+    .from("bookmarks")
     .select("id, is_active")
     .eq("student_id", session.student_id)
     .eq("opportunity_id", opportunity_id)
@@ -40,10 +40,10 @@ export async function POST(req: NextRequest) {
 
   if (existing?.is_active) {
     await supabaseServer
-      .from("public.bookmarks")
+      .from("bookmarks")
       .update({ is_active: false })
       .eq("id", existing.id);
-    await supabaseServer.rpc("public.decrement_bookmark_count", {
+    await supabaseServer.rpc("decrement_bookmark_count", {
       opp_id: opportunity_id,
     });
     return NextResponse.json({ is_bookmarked: false });
@@ -51,18 +51,18 @@ export async function POST(req: NextRequest) {
 
   if (existing) {
     await supabaseServer
-      .from("public.bookmarks")
+      .from("bookmarks")
       .update({ is_active: true })
       .eq("id", existing.id);
   } else {
-    await supabaseServer.from("public.bookmarks").insert({
+    await supabaseServer.from("bookmarks").insert({
       student_id: session.student_id,
       opportunity_id,
       is_active: true,
     });
   }
 
-  await supabaseServer.rpc("public.increment_bookmark_count", {
+  await supabaseServer.rpc("increment_bookmark_count", {
     opp_id: opportunity_id,
   });
 
