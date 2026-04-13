@@ -91,7 +91,12 @@ export default function OnboardingPage() {
     });
 
     if (!profileRes.ok) {
-      setError("Profile save failed. Try again.");
+      const data = await profileRes.json().catch(() => null);
+      setError(
+        data?.error
+          ? `Profile save failed: ${data.error}`
+          : "Profile save failed. Try again.",
+      );
       setLoading(false);
       return;
     }

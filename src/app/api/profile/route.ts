@@ -34,10 +34,13 @@ export async function POST(req: NextRequest) {
   }
 
   const payload = await req.json();
-  const { error } = await supabaseServer.from("public.profiles").upsert({
-    student_id: session.student_id,
-    ...payload,
-  });
+  const { error } = await supabaseServer.from("public.profiles").upsert(
+    {
+      student_id: session.student_id,
+      ...payload,
+    },
+    { onConflict: "student_id" },
+  );
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
