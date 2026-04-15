@@ -96,7 +96,7 @@ export default function FilterBar() {
         }
 
         if (changed) {
-          router.replace(`/feed?${params.toString()}`);
+          updateUrl(params);
         }
       } catch (error) {
         // Ignore profile load errors for MVP filter defaults.
@@ -108,6 +108,7 @@ export default function FilterBar() {
 
   const updateUrl = (next: URLSearchParams) => {
     router.replace(`/feed?${next.toString()}`);
+    router.refresh();
   };
 
   const toggleParam = (key: "alumni" | "new") => {
