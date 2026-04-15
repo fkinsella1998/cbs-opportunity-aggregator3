@@ -14,6 +14,7 @@ const seedData: Omit<
   | "bookmark_count"
   | "application_count"
 > = {
+  industry: "Technology",
   company_name: "HelioShare",
   role_title: "Growth Strategy Intern",
   function: "Strategy",
@@ -42,6 +43,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
 
   return [
     makeOpportunity({
+      industry: "Technology",
       company_name: "HelioShare",
       role_title: "Growth Strategy Intern",
       function: "Strategy",
@@ -51,6 +53,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       application_link: "https://example.com/jobs/helioshare",
     }),
     makeOpportunity({
+      industry: "Finance & FinTech",
       company_name: "Altara Capital",
       role_title: "Investment Analyst",
       function: "Finance",
@@ -61,6 +64,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       has_cbs_alumni: "Unknown",
     }),
     makeOpportunity({
+      industry: "Healthcare & Biotech",
       company_name: "NorthBridge Health",
       role_title: "Product Manager, Digital Health",
       function: "Product",
@@ -70,6 +74,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       application_link: "https://example.com/jobs/northbridge",
     }),
     makeOpportunity({
+      industry: "Technology",
       company_name: "Quanta Commerce",
       role_title: "AI Partnerships Associate",
       function: "Business Development",
@@ -79,6 +84,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       application_link: "https://example.com/jobs/quanta",
     }),
     makeOpportunity({
+      industry: "Consumer & Retail",
       company_name: "Summit Mobility",
       role_title: "Operations & Strategy Intern",
       function: "Operations",
@@ -89,6 +95,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       has_cbs_alumni: "No",
     }),
     makeOpportunity({
+      industry: "Consumer & Retail",
       company_name: "Arcadia Retail",
       role_title: "Merchandising Analyst",
       function: "Analytics",
@@ -98,6 +105,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       application_link: "https://example.com/jobs/arcadia",
     }),
     makeOpportunity({
+      industry: "Climate & Energy",
       company_name: "Bluecrest Energy",
       role_title: "Sustainability Associate",
       function: "Sustainability",
@@ -108,6 +116,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       has_cbs_alumni: "Unknown",
     }),
     makeOpportunity({
+      industry: "Technology",
       company_name: "Vista Labs",
       role_title: "Product Marketing Manager",
       function: "Marketing",

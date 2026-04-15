@@ -62,18 +62,46 @@ export default async function FeedPage({
         .limit(25);
 
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const normalize = (value: string) => value.trim().toLowerCase();
+  const industryFilter = industry ? normalize(industry) : null;
+  const functionFilter = func ? normalize(func) : null;
+  const stageFilter = stage ? normalize(stage) : null;
+  const typeFilter = type ? normalize(type) : null;
+
+  const deriveIndustry = (opp: OpportunityWithMeta) => {
+    const industryValue = (opp as { industry?: string }).industry;
+    if (industryValue) return industryValue;
+    const fallback = opp.function ?? "";
+    const mapping: Record<string, string> = {
+      finance: "Finance & FinTech",
+      strategy: "Technology",
+      operations: "Consumer & Retail",
+      marketing: "Media & Entertainment",
+      product: "Technology",
+      analytics: "Technology",
+      sustainability: "Climate & Energy",
+      "business development": "Technology",
+    };
+    return mapping[normalize(fallback)] ?? fallback;
+  };
   const items: OpportunityWithMeta[] = (refreshed || [])
     .filter((opp) => Boolean(opp.id) && opp.id !== "undefined")
     .filter((opp) => {
       if (alumniOnly && opp.has_cbs_alumni !== "Yes") return false;
       if (newThisWeek && new Date(opp.went_live_at) < weekAgo) return false;
-      if (industry) {
-        const industryValue = (opp as { industry?: string }).industry ?? opp.function;
-        if (!industryValue || industryValue !== industry) return false;
+      if (industryFilter) {
+        const industryValue = deriveIndustry(opp);
+        if (!industryValue || normalize(industryValue) !== industryFilter) return false;
       }
-      if (func && opp.function !== func) return false;
-      if (stage && opp.company_stage !== stage) return false;
-      if (type && opp.employment_type !== type) return false;
+      if (functionFilter && normalize(opp.function ?? "") !== functionFilter) {
+        return false;
+      }
+      if (stageFilter && normalize(opp.company_stage ?? "") !== stageFilter) {
+        return false;
+      }
+      if (typeFilter && normalize(opp.employment_type ?? "") !== typeFilter) {
+        return false;
+      }
       return true;
     })
     .map((opp) => ({
