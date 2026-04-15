@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const industryOptions = [
@@ -40,38 +41,104 @@ const typeOptions = ["All types", "Full-time", "Internship", "Part-time", "Proje
 
 export default function FilterBar() {
   const router = useRouter();
-  const params =
-    typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search)
-      : new URLSearchParams();
-  const alumniOnly = params.get("alumni") === "true";
-  const newThisWeek = params.get("new") === "true";
-  const selectedIndustry = params.get("industry") ?? "All industries";
-  const selectedFunction = params.get("function") ?? "All functions";
-  const selectedStage = params.get("stage") ?? "All stages";
-  const selectedType = params.get("type") ?? "All types";
+  const [selectedIndustry, setSelectedIndustry] = useState("All industries");
+  const [selectedFunction, setSelectedFunction] = useState("All functions");
+  const [selectedStage, setSelectedStage] = useState("All stages");
+  const [selectedType, setSelectedType] = useState("All types");
+  const [alumniOnly, setAlumniOnly] = useState(false);
+  const [newThisWeek, setNewThisWeek] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setSelectedIndustry(params.get("industry") ?? "All industries");
+    setSelectedFunction(params.get("function") ?? "All functions");
+    setSelectedStage(params.get("stage") ?? "All stages");
+    setSelectedType(params.get("type") ?? "All types");
+    setAlumniOnly(params.get("alumni") === "true");
+    setNewThisWeek(params.get("new") === "true");
+  }, []);
+
+  useEffect(() => {
+    async function loadProfileDefaults() {
+      try {
+        const res = await fetch("/api/profile");
+        if (!res.ok) return;
+        const data = await res.json();
+        const profile = data.profile;
+        if (!profile) return;
+        if (typeof window === "undefined") return;
+        const params = new URLSearchParams(window.location.search);
+        let changed = false;
+
+        if (!params.get("industry") && profile.industry_interests?.length) {
+          params.set("industry", profile.industry_interests[0]);
+          setSelectedIndustry(profile.industry_interests[0]);
+          changed = true;
+        }
+        if (!params.get("function") && profile.function_interests?.length) {
+          params.set("function", profile.function_interests[0]);
+          setSelectedFunction(profile.function_interests[0]);
+          changed = true;
+        }
+        if (!params.get("type") && profile.employment_type_pref) {
+          const mapping: Record<string, string> = {
+            full_time: "Full-time",
+            internship: "Internship",
+            both: "All types",
+          };
+          const nextType = mapping[profile.employment_type_pref] ?? "All types";
+          if (nextType !== "All types") {
+            params.set("type", nextType);
+          }
+          setSelectedType(nextType);
+          changed = true;
+        }
+
+        if (changed) {
+          router.replace(`/feed?${params.toString()}`);
+        }
+      } catch (error) {
+        // Ignore profile load errors for MVP filter defaults.
+      }
+    }
+
+    loadProfileDefaults();
+  }, [router]);
+
+  const updateUrl = (next: URLSearchParams) => {
+    router.replace(`/feed?${next.toString()}`);
+  };
 
   const toggleParam = (key: "alumni" | "new") => {
-    const next = new URLSearchParams(params.toString());
+    if (typeof window === "undefined") return;
+    const next = new URLSearchParams(window.location.search);
     const current = next.get(key) === "true";
     if (current) {
       next.delete(key);
     } else {
       next.set(key, "true");
     }
-    router.replace(`/feed?${next.toString()}`);
+    if (key === "alumni") setAlumniOnly(!current);
+    if (key === "new") setNewThisWeek(!current);
+    updateUrl(next);
   };
 
   const updateSelect = (key: "industry" | "function" | "stage" | "type") =>
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const next = new URLSearchParams(params.toString());
+      if (typeof window === "undefined") return;
+      const next = new URLSearchParams(window.location.search);
       const value = event.target.value;
       if (value.startsWith("All ")) {
         next.delete(key);
       } else {
         next.set(key, value);
       }
-      router.replace(`/feed?${next.toString()}`);
+      if (key === "industry") setSelectedIndustry(value);
+      if (key === "function") setSelectedFunction(value);
+      if (key === "stage") setSelectedStage(value);
+      if (key === "type") setSelectedType(value);
+      updateUrl(next);
     };
 
   return (

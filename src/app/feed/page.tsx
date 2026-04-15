@@ -31,7 +31,7 @@ export default async function FeedPage({
     query = query.gte("went_live_at", weekAgo);
   }
   if (industry) {
-    query = query.eq("function", industry);
+    query = query.eq("industry", industry);
   }
   if (func) {
     query = query.eq("function", func);
