@@ -75,7 +75,7 @@ export default function OnboardingPage() {
     });
 
     if (!parseRes.ok) {
-      setError("Resume parsing failed. Continuing without parsing.");
+      setError("Resume uploaded. Parsing is skipped for the MVP.");
     }
 
     const profileRes = await fetch("/api/profile", {

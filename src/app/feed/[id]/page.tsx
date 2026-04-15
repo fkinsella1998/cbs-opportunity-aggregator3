@@ -100,7 +100,9 @@ export default async function OpportunityDetailPage({
   const [alumniRes, bookmarkRes, applicationRes] = await Promise.all([
     supabaseServer
       .from("alumni")
-      .select("id, first_name, last_name, title, linkedin_url, graduation_year")
+      .select(
+        "id, first_name, last_name, title, linkedin_url, graduation_year, email",
+      )
       .ilike("company_name", resolvedOpportunity.company_name)
       .limit(10),
     studentId && opportunity
@@ -127,6 +129,7 @@ export default async function OpportunityDetailPage({
       first_name: "Jordan",
       last_name: "Lee",
       title: "Senior Product Manager",
+      email: "jordan.lee@alumni.cbs.edu",
       linkedin_url: "https://www.linkedin.com/",
       graduation_year: 2020,
     },
@@ -135,6 +138,7 @@ export default async function OpportunityDetailPage({
       first_name: "Avery",
       last_name: "Patel",
       title: "Investment Associate",
+      email: "avery.patel@alumni.cbs.edu",
       linkedin_url: "https://www.linkedin.com/",
       graduation_year: 2019,
     },
@@ -210,6 +214,18 @@ export default async function OpportunityDetailPage({
                   >
                     LinkedIn →
                   </a>
+                  {alum.email ? (
+                    <>
+                      {" "}
+                      ·{" "}
+                      <a
+                        href={`mailto:${alum.email}`}
+                        className="text-text-tertiary underline"
+                      >
+                        Email →
+                      </a>
+                    </>
+                  ) : null}
                 </li>
               ))}
             </ul>

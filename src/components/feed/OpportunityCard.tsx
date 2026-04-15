@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 import type { OpportunityWithMeta } from "@/types";
 import { timeAgo } from "@/lib/dates";
@@ -8,6 +11,10 @@ export default function OpportunityCard({
 }: {
   opportunity: OpportunityWithMeta;
 }) {
+  const [isBookmarked, setIsBookmarked] = useState(
+    Boolean(opportunity.is_bookmarked),
+  );
+  const [isSaving, setIsSaving] = useState(false);
   const safeId =
     opportunity.id && opportunity.id !== "undefined" ? opportunity.id : "preview";
   const query: Record<string, string> = {};
@@ -26,6 +33,25 @@ export default function OpportunityCard({
   if (opportunity.source) query.source = opportunity.source;
   if (opportunity.went_live_at) query.went_live_at = opportunity.went_live_at;
 
+  const toggleBookmark = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!opportunity.id || opportunity.id === "preview") return;
+    setIsSaving(true);
+    const res = await fetch("/api/bookmarks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ opportunity_id: opportunity.id }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setIsBookmarked(Boolean(data?.is_bookmarked));
+    }
+    setIsSaving(false);
+  };
+
   return (
     <Link
       href={{ pathname: `/feed/${safeId}`, query }}
@@ -41,14 +67,17 @@ export default function OpportunityCard({
             <span className="text-text-tertiary">{opportunity.location}</span>
           </p>
         </div>
-        <span
+        <button
+          type="button"
+          onClick={toggleBookmark}
+          disabled={isSaving || !opportunity.id || opportunity.id === "preview"}
           className={`text-xs font-mono uppercase tracking-[0.08em] border px-2 py-1 ${
-            opportunity.is_bookmarked ? "border-text text-text" : "border-border"
+            isBookmarked ? "border-text text-text" : "border-border"
           }`}
           aria-label="Bookmark"
         >
-          {opportunity.is_bookmarked ? "Saved" : "Save"}
-        </span>
+          {isBookmarked ? "Saved" : "Save"}
+        </button>
       </div>
       <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-[0.08em] text-text-secondary">
         {opportunity.function ? (

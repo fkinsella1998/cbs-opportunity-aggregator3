@@ -105,6 +105,7 @@ export interface Alumni {
   last_name: string;
   company_name: string;
   title?: string;
+  email?: string;
   linkedin_url?: string;
   graduation_year?: number;
 }

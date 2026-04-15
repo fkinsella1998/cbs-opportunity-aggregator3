@@ -5,13 +5,29 @@ import { buildMockOpportunities } from "@/lib/mock-opportunities";
 import { supabaseServer } from "@/lib/supabase-server";
 import type { OpportunityWithMeta } from "@/types";
 
-export default async function FeedPage() {
-  const { data: opportunities } = await supabaseServer
+export default async function FeedPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+  const alumniOnly = searchParams?.alumni === "true";
+  const newThisWeek = searchParams?.new === "true";
+
+  let query = supabaseServer
     .from("opportunities")
     .select("*")
     .eq("status", "Live")
     .order("went_live_at", { ascending: false })
     .limit(25);
+  if (alumniOnly) {
+    query = query.eq("has_cbs_alumni", "Yes");
+  }
+  if (newThisWeek) {
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    query = query.gte("went_live_at", weekAgo);
+  }
+
+  const { data: opportunities } = await query;
 
   const hasMissingId = (opportunities || []).some(
     (opp) => !opp.id || opp.id === "undefined",
