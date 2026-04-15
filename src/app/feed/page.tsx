@@ -5,43 +5,30 @@ import { buildMockOpportunities } from "@/lib/mock-opportunities";
 import { supabaseServer } from "@/lib/supabase-server";
 import type { OpportunityWithMeta } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function FeedPage({
   searchParams,
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const alumniOnly = searchParams?.alumni === "true";
-  const newThisWeek = searchParams?.new === "true";
-  const industry = typeof searchParams?.industry === "string" ? searchParams.industry : null;
-  const func = typeof searchParams?.function === "string" ? searchParams.function : null;
-  const stage = typeof searchParams?.stage === "string" ? searchParams.stage : null;
-  const type = typeof searchParams?.type === "string" ? searchParams.type : null;
+  const param = (key: string) => {
+    const value = searchParams?.[key];
+    return Array.isArray(value) ? value[0] : value;
+  };
+  const alumniOnly = param("alumni") === "true";
+  const newThisWeek = param("new") === "true";
+  const industry = param("industry");
+  const func = param("function");
+  const stage = param("stage");
+  const type = param("type");
 
-  let query = supabaseServer
+  const query = supabaseServer
     .from("opportunities")
     .select("*")
     .eq("status", "Live")
     .order("went_live_at", { ascending: false })
     .limit(25);
-  if (alumniOnly) {
-    query = query.eq("has_cbs_alumni", "Yes");
-  }
-  if (newThisWeek) {
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    query = query.gte("went_live_at", weekAgo);
-  }
-  if (industry) {
-    query = query.eq("industry", industry);
-  }
-  if (func) {
-    query = query.eq("function", func);
-  }
-  if (stage) {
-    query = query.eq("company_stage", stage);
-  }
-  if (type) {
-    query = query.eq("employment_type", type);
-  }
 
   const { data: opportunities } = await query;
 
@@ -74,8 +61,21 @@ export default async function FeedPage({
         .order("went_live_at", { ascending: false })
         .limit(25);
 
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const items: OpportunityWithMeta[] = (refreshed || [])
     .filter((opp) => Boolean(opp.id) && opp.id !== "undefined")
+    .filter((opp) => {
+      if (alumniOnly && opp.has_cbs_alumni !== "Yes") return false;
+      if (newThisWeek && new Date(opp.went_live_at) < weekAgo) return false;
+      if (industry) {
+        const industryValue = (opp as { industry?: string }).industry ?? opp.function;
+        if (!industryValue || industryValue !== industry) return false;
+      }
+      if (func && opp.function !== func) return false;
+      if (stage && opp.company_stage !== stage) return false;
+      if (type && opp.employment_type !== type) return false;
+      return true;
+    })
     .map((opp) => ({
       ...opp,
       is_bookmarked: false,
