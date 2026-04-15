@@ -75,6 +75,7 @@ export interface Opportunity {
   id: string;
   company_name: string;
   role_title: string;
+  industry?: string;
   function?: string;
   company_stage?: CompanyStage;
   employment_type?: EmploymentType;
