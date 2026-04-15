@@ -1,18 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const staticFilters = ["Industry", "Function", "Stage", "Type"];
 
 export default function FilterBar() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const alumniOnly = searchParams.get("alumni") === "true";
-  const newThisWeek = searchParams.get("new") === "true";
+  const params = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : new URLSearchParams();
+  const alumniOnly = params.get("alumni") === "true";
+  const newThisWeek = params.get("new") === "true";
 
   const toggleParam = (key: "alumni" | "new") => {
-    const next = new URLSearchParams(searchParams.toString());
+    const next = new URLSearchParams(params.toString());
     const current = next.get(key) === "true";
     if (current) {
       next.delete(key);
