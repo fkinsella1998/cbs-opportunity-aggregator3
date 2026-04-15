@@ -12,6 +12,10 @@ export default async function FeedPage({
 }) {
   const alumniOnly = searchParams?.alumni === "true";
   const newThisWeek = searchParams?.new === "true";
+  const industry = typeof searchParams?.industry === "string" ? searchParams.industry : null;
+  const func = typeof searchParams?.function === "string" ? searchParams.function : null;
+  const stage = typeof searchParams?.stage === "string" ? searchParams.stage : null;
+  const type = typeof searchParams?.type === "string" ? searchParams.type : null;
 
   let query = supabaseServer
     .from("opportunities")
@@ -25,6 +29,18 @@ export default async function FeedPage({
   if (newThisWeek) {
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     query = query.gte("went_live_at", weekAgo);
+  }
+  if (industry) {
+    query = query.eq("function", industry);
+  }
+  if (func) {
+    query = query.eq("function", func);
+  }
+  if (stage) {
+    query = query.eq("company_stage", stage);
+  }
+  if (type) {
+    query = query.eq("employment_type", type);
   }
 
   const { data: opportunities } = await query;
