@@ -156,7 +156,7 @@ export default async function OpportunityDetailPage({
         ← Back
       </Link>
       <div className="mt-6">
-        <h1 className="text-text text-2xl font-semibold">
+        <h1 className="text-accent text-2xl font-semibold">
           {resolvedOpportunity.role_title}
         </h1>
         <p className="text-text-secondary text-base">

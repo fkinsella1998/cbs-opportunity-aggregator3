@@ -33,8 +33,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-text">
       <div className="hidden md:flex">
-        <aside className="w-[200px] border-r border-border-subtle px-6 py-10">
-          <p className="font-mono text-text-tertiary text-xs tracking-[0.2em] uppercase mb-8">
+        <aside className="w-[200px] border-r border-border-subtle bg-surface-raised px-6 py-10">
+          <p className="font-mono text-accent text-xs tracking-[0.2em] uppercase mb-8">
             CBS Opportunities
           </p>
           <nav className="flex flex-col gap-3">

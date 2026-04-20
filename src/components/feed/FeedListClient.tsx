@@ -67,7 +67,7 @@ export default function FeedListClient({
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-text text-lg font-medium">Non-OCR Opportunities</h1>
+        <h1 className="text-accent text-lg font-medium">Non-OCR Opportunities</h1>
         <p className="text-text-tertiary text-sm font-mono mt-0.5">
           {filtered.length} opportunities
         </p>
