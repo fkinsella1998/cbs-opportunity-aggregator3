@@ -111,6 +111,17 @@ export interface Alumni {
   graduation_year?: number;
 }
 
+export interface Professor {
+  professor_id: string;
+  first_name: string;
+  last_name: string;
+  department: string;
+  bio: string;
+  columbia_profile_url: string;
+  industry_tags: string[];
+  is_open_to_outreach: boolean;
+}
+
 export interface FeedFilters {
   industry?: string[];
   function?: string[];

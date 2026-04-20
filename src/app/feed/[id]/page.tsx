@@ -5,6 +5,7 @@ import { formatDeadline, timeAgo } from "@/lib/dates";
 import { buildMockOpportunities } from "@/lib/mock-opportunities";
 import { getSession } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase-server";
+import type { Professor } from "@/types";
 
 export default async function OpportunityDetailPage({
   params,
@@ -97,7 +98,9 @@ export default async function OpportunityDetailPage({
   }
 
   const studentId = session.student_id;
-  const [alumniRes, bookmarkRes, applicationRes] = await Promise.all([
+  const industryMatch = (resolvedOpportunity as { industry?: string }).industry ?? null;
+
+  const [alumniRes, professorsRes, bookmarkRes, applicationRes] = await Promise.all([
     supabaseServer
       .from("alumni")
       .select(
@@ -105,6 +108,16 @@ export default async function OpportunityDetailPage({
       )
       .ilike("company_name", resolvedOpportunity.company_name)
       .limit(10),
+    industryMatch
+      ? supabaseServer
+          .from("professors")
+          .select(
+            "professor_id, first_name, last_name, department, bio, columbia_profile_url, industry_tags, is_open_to_outreach",
+          )
+          .contains("industry_tags", [industryMatch])
+          .order("is_open_to_outreach", { ascending: false })
+          .limit(3)
+      : Promise.resolve({ data: [] }),
     studentId && opportunity
       ? supabaseServer
           .from("bookmarks")
@@ -123,6 +136,7 @@ export default async function OpportunityDetailPage({
       : Promise.resolve({ data: null }),
   ]);
   const alumni = alumniRes.data || [];
+  const professors = (professorsRes.data as Professor[] | null) || [];
   const mockAlumni = [
     {
       id: "preview-alum-1",
@@ -232,6 +246,45 @@ export default async function OpportunityDetailPage({
           </div>
         </>
       ) : null}
+
+      <div className="mt-8 border-t border-border-subtle pt-6">
+        <p className="font-mono text-xs tracking-[0.2em] text-text-tertiary uppercase">
+          Relevant Faculty
+        </p>
+        {professors.length === 0 ? (
+          <p className="mt-3 text-text-tertiary text-sm">
+            No faculty matches for this industry yet.
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2 text-text-secondary text-sm">
+            {professors.map((professor) => (
+              <li key={professor.professor_id}>
+                <span className="text-text">
+                  {professor.first_name} {professor.last_name}
+                </span>{" "}
+                · {professor.department} · {professor.bio} ·{" "}
+                <a
+                  href={professor.columbia_profile_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-text-tertiary underline"
+                >
+                  View Profile →
+                </a>
+                {professor.is_open_to_outreach ? (
+                  <>
+                    {" "}
+                    ·{" "}
+                    <span className="border border-text text-text px-2 py-1 font-mono uppercase tracking-[0.08em]">
+                      Open to Outreach
+                    </span>
+                  </>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <div className="mt-8 border-t border-border-subtle pt-6">
         <p className="font-mono text-xs tracking-[0.2em] text-text-tertiary uppercase">
