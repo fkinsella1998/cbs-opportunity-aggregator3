@@ -59,52 +59,7 @@ export default function FilterBar() {
     setNewThisWeek(params.get("new") === "true");
   }, []);
 
-  useEffect(() => {
-    async function loadProfileDefaults() {
-      try {
-        const res = await fetch("/api/profile");
-        if (!res.ok) return;
-        const data = await res.json();
-        const profile = data.profile;
-        if (!profile) return;
-        if (typeof window === "undefined") return;
-        const params = new URLSearchParams(window.location.search);
-        let changed = false;
-
-        if (!params.get("industry") && profile.industry_interests?.length) {
-          params.set("industry", profile.industry_interests[0]);
-          setSelectedIndustry(profile.industry_interests[0]);
-          changed = true;
-        }
-        if (!params.get("function") && profile.function_interests?.length) {
-          params.set("function", profile.function_interests[0]);
-          setSelectedFunction(profile.function_interests[0]);
-          changed = true;
-        }
-        if (!params.get("type") && profile.employment_type_pref) {
-          const mapping: Record<string, string> = {
-            full_time: "Full-time",
-            internship: "Internship",
-            both: "All types",
-          };
-          const nextType = mapping[profile.employment_type_pref] ?? "All types";
-          if (nextType !== "All types") {
-            params.set("type", nextType);
-          }
-          setSelectedType(nextType);
-          changed = true;
-        }
-
-        if (changed) {
-          updateUrl(params);
-        }
-      } catch (error) {
-        // Ignore profile load errors for MVP filter defaults.
-      }
-    }
-
-    loadProfileDefaults();
-  }, [router]);
+  // Profile defaults removed so feed starts unfiltered.
 
   const updateUrl = (next: URLSearchParams) => {
     router.replace(`/feed?${next.toString()}`);

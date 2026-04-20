@@ -59,7 +59,7 @@ export default function OpportunityCard({
   return (
     <Link
       href={{ pathname: `/feed/${safeId}`, query }}
-      className="block border-b border-border-subtle py-4 transition-colors hover:bg-[#0f0f0f]"
+      className="block border-b border-border-subtle py-4 transition-colors hover:bg-surface-raised"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
