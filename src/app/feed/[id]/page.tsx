@@ -271,15 +271,6 @@ export default async function OpportunityDetailPage({
                 >
                   View Profile →
                 </a>
-                {professor.is_open_to_outreach ? (
-                  <>
-                    {" "}
-                    ·{" "}
-                    <span className="border border-text text-text px-2 py-1 font-mono uppercase tracking-[0.08em]">
-                      Open to Outreach
-                    </span>
-                  </>
-                ) : null}
               </li>
             ))}
           </ul>
