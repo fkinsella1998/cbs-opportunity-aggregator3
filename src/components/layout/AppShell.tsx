@@ -44,7 +44,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 className={`text-sm ${
                   pathname === item.href ? "text-text" : "text-text-tertiary"
-                } hover:text-text`}
+                } hover:text-text-secondary`}
               >
                 {item.label}
               </Link>
@@ -53,14 +53,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <div className="mt-auto pt-12">
             <Button
               variant="ghost"
-              className="px-0 text-xs text-text-tertiary hover:text-text"
+              className="px-0 text-xs text-text-tertiary hover:text-text-secondary"
               onClick={toggleTheme}
             >
               {theme === "dark" ? "Light mode" : "Dark mode"}
             </Button>
             <Button
               variant="ghost"
-              className="px-0 text-xs text-text-tertiary hover:text-text"
+              className="px-0 text-xs text-text-tertiary hover:text-text-secondary"
               onClick={async () => {
                 await fetch("/api/auth/logout", { method: "POST" });
                 window.location.href = "/login";

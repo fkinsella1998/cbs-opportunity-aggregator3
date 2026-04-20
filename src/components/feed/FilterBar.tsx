@@ -209,7 +209,7 @@ export default function FilterBar() {
         </button>
         <Link
           href="/onboarding"
-          className="border border-border px-3 py-2 rounded text-text hover:text-white transition"
+          className="border border-border px-3 py-2 rounded text-text hover:text-text-secondary transition"
         >
           Reset filters
         </Link>
