@@ -15,6 +15,17 @@
   --accent: #ffffff;
 }
 
+[data-theme="light"] {
+  --background: #f6f6f6;
+  --surface: #ffffff;
+  --surface-raised: #f0f0f0;
+  --border: #d9d9d9;
+  --text: #111111;
+  --text-secondary: #555555;
+  --text-tertiary: #777777;
+  --accent: #111111;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -22,14 +33,14 @@
 }
 
 html {
-  background-color: #0a0a0a;
-  color: #f0f0f0;
+  background-color: var(--background);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background-color: #0a0a0a;
+  background-color: var(--background);
   font-family: "DM Sans", sans-serif;
   font-size: 15px;
   line-height: 1.5;
@@ -57,18 +68,18 @@ body {
 input,
 textarea,
 select {
-  background-color: #111111 !important;
-  color: #f0f0f0 !important;
-  border-color: #2a2a2a !important;
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #555555 !important;
+  color: var(--text-tertiary) !important;
 }
 
 input:focus,
 textarea:focus {
-  border-color: #555555 !important;
+  border-color: var(--text-tertiary) !important;
   box-shadow: none !important;
 }

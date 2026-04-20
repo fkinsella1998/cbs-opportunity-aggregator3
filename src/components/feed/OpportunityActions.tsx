@@ -46,24 +46,26 @@
      setBusy(null);
    }
 
-   return (
-     <div className="flex flex-wrap gap-3">
+  return (
+    <div className="flex flex-wrap gap-3">
       <Button
         type="button"
         variant="ghost"
         onClick={toggleBookmark}
         disabled={!!busy || isPreview}
+        className={isBookmarked ? "border-text text-text" : undefined}
       >
-         {isBookmarked ? "Bookmarked" : "Bookmark"}
-       </Button>
+        {isBookmarked ? "✓ Bookmarked" : "Bookmark"}
+      </Button>
       <Button
         type="button"
         variant="ghost"
         onClick={toggleApplied}
         disabled={!!busy || isPreview}
+        className={hasApplied ? "border-text text-text" : undefined}
       >
-         {hasApplied ? "Application recorded" : "I applied"}
-       </Button>
-     </div>
-   );
+        {hasApplied ? "✓ Applied" : "I applied"}
+      </Button>
+    </div>
+  );
  }

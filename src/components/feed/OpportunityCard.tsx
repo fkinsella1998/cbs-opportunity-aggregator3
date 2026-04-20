@@ -15,6 +15,10 @@ export default function OpportunityCard({
     Boolean(opportunity.is_bookmarked),
   );
   const [isSaving, setIsSaving] = useState(false);
+  const isNew =
+    opportunity.went_live_at &&
+    new Date(opportunity.went_live_at) >
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const safeId =
     opportunity.id && opportunity.id !== "undefined" ? opportunity.id : "preview";
   const query: Record<string, string> = {};
@@ -76,7 +80,7 @@ export default function OpportunityCard({
           }`}
           aria-label="Bookmark"
         >
-          {isBookmarked ? "Saved" : "Save"}
+          {isBookmarked ? "✓ Saved" : "Save"}
         </button>
       </div>
       <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-[0.08em] text-text-secondary">
@@ -88,12 +92,15 @@ export default function OpportunityCard({
             {opportunity.company_stage}
           </span>
         ) : null}
+        {isNew ? (
+          <span className="border border-text text-text px-2 py-1">New</span>
+        ) : null}
         {opportunity.has_cbs_alumni === "Yes" ? (
           <span className="border border-text text-text px-2 py-1">CBS Alumni</span>
         ) : null}
       </div>
       <div className="mt-2 flex items-center justify-between text-xs font-mono text-text-tertiary">
-        <span>{timeAgo(opportunity.went_live_at)}</span>
+        <span>Posted {timeAgo(opportunity.went_live_at)}</span>
         <span>{opportunity.source}</span>
       </div>
     </Link>

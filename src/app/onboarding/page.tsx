@@ -125,12 +125,19 @@ export default function OnboardingPage() {
           <p className="text-text-secondary text-sm mt-1">
             Takes about 2 minutes. You can update this later.
           </p>
+          <p className="text-text-tertiary text-xs mt-3">
+            Your profile helps us filter roles (visa, industry) and will power
+            personalized matches soon.
+          </p>
         </div>
 
         <section className="space-y-4">
           <div>
             <Label>Resume</Label>
             <p className="text-text-tertiary text-xs">PDF or Word doc</p>
+            <p className="text-text-tertiary text-xs mt-1">
+              Used for future matching (not required for MVP).
+            </p>
           </div>
           <div className="border border-border border-dashed rounded px-4 py-6 text-center text-text-secondary text-sm">
             <p>Drop your resume here</p>
