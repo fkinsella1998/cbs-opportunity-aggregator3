@@ -5,35 +5,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0a0a;
-  --surface: #111111;
-  --surface-raised: #1a1a1a;
-  --border: #2a2a2a;
-  --border-subtle: #1e1e1e;
-  --text: #f0f0f0;
-  --text-secondary: #888888;
-  --text-tertiary: #555555;
-  --accent: #ffffff;
-  --accent-dim: #cccccc;
-  --destructive: #ff4444;
-  --success: #22c55e;
-  --warning: #f59e0b;
-}
-
-[data-theme="light"] {
-  --background: #ffffff;
+  --background: #f5f5f5;
   --surface: #ffffff;
-  --surface-raised: #eef5fb;
-  --border: #d9d9d9;
-  --border-subtle: #e6e6e6;
-  --text: #000000;
-  --text-secondary: #4a4a4a;
-  --text-tertiary: #6b6b6b;
-  --accent: #b9d9eb;
-  --accent-dim: #7fb3d5;
-  --destructive: #dc2626;
-  --success: #16a34a;
-  --warning: #d97706;
+  --surface-raised: #e9f1f9;
+  --border: #d6dbe1;
+  --border-subtle: #e6ebf0;
+  --text: #002244;
+  --text-secondary: #1f3a5f;
+  --text-tertiary: #4d5f7a;
+  --accent: #75aadb;
+  --accent-dim: #3b7bb8;
+  --destructive: #b91c1c;
+  --success: #15803d;
+  --warning: #b45309;
 }
 
 * {
@@ -51,9 +35,17 @@ html {
 
 body {
   background-color: var(--background);
-  font-family: "DM Sans", sans-serif;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 15px;
   line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--text);
 }
 
 *:focus-visible {
