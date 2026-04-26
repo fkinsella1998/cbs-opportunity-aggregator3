@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import type { OpportunityWithMeta } from "@/types";
-import { timeAgo } from "@/lib/dates";
+import { cardPostedLabel } from "@/lib/dates";
 
 export default function OpportunityCard({
   opportunity,
@@ -93,14 +93,14 @@ export default function OpportunityCard({
           </span>
         ) : null}
         {isNew ? (
-          <span className="border border-text text-text px-2 py-1">New</span>
+          <span className="bg-accent text-white px-2 py-1 rounded">New</span>
         ) : null}
         {opportunity.has_cbs_alumni === "Yes" ? (
           <span className="border border-text text-text px-2 py-1">CBS Alumni</span>
         ) : null}
       </div>
       <div className="mt-2 flex items-center justify-between text-xs font-mono text-text-tertiary">
-        <span>Posted {timeAgo(opportunity.went_live_at)}</span>
+        <span>{cardPostedLabel(opportunity.went_live_at)}</span>
         <span>{opportunity.source}</span>
       </div>
     </Link>
