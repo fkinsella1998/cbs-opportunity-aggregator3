@@ -31,13 +31,15 @@ const seedData: Omit<
 };
 
 export function buildMockOpportunities(): Partial<Opportunity>[] {
-  const now = new Date().toISOString();
+  const now = Date.now();
+  const daysAgo = (days: number) =>
+    new Date(now - days * 24 * 60 * 60 * 1000).toISOString();
   const makeOpportunity = (
     overrides: Partial<Opportunity>,
   ): Partial<Opportunity> => ({
     ...seedData,
     id: crypto.randomUUID(),
-    went_live_at: now,
+    went_live_at: daysAgo(0),
     ...overrides,
   });
 
@@ -51,6 +53,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Internship",
       location: "New York, NY",
       application_link: "https://example.com/jobs/helioshare",
+      went_live_at: daysAgo(0),
     }),
     makeOpportunity({
       industry: "Finance & FinTech",
@@ -62,6 +65,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       location: "New York, NY",
       application_link: "https://example.com/jobs/altara",
       has_cbs_alumni: "Unknown",
+      went_live_at: daysAgo(2),
     }),
     makeOpportunity({
       industry: "Healthcare & Biotech",
@@ -72,6 +76,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "Boston, MA",
       application_link: "https://example.com/jobs/northbridge",
+      went_live_at: daysAgo(5),
     }),
     makeOpportunity({
       industry: "Technology",
@@ -82,6 +87,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "Remote",
       application_link: "https://example.com/jobs/quanta",
+      went_live_at: daysAgo(1),
     }),
     makeOpportunity({
       industry: "Consumer & Retail",
@@ -93,6 +99,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       location: "San Francisco, CA",
       application_link: "https://example.com/jobs/summit",
       has_cbs_alumni: "No",
+      went_live_at: daysAgo(9),
     }),
     makeOpportunity({
       industry: "Consumer & Retail",
@@ -103,6 +110,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "Chicago, IL",
       application_link: "https://example.com/jobs/arcadia",
+      went_live_at: daysAgo(4),
     }),
     makeOpportunity({
       industry: "Climate & Energy",
@@ -114,6 +122,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       location: "Houston, TX",
       application_link: "https://example.com/jobs/bluecrest",
       has_cbs_alumni: "Unknown",
+      went_live_at: daysAgo(6),
     }),
     makeOpportunity({
       industry: "Technology",
@@ -124,6 +133,7 @@ export function buildMockOpportunities(): Partial<Opportunity>[] {
       employment_type: "Full-time",
       location: "Remote",
       application_link: "https://example.com/jobs/vista",
+      went_live_at: daysAgo(12),
     }),
   ];
 }

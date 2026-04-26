@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import OpportunityActions from "@/components/feed/OpportunityActions";
-import { formatDeadline, timeAgo } from "@/lib/dates";
+import { cardPostedLabel, formatDeadline, formatPostedDate } from "@/lib/dates";
 import { buildMockOpportunities } from "@/lib/mock-opportunities";
 import { getSession } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase-server";
@@ -15,8 +15,7 @@ export default async function OpportunityDetailPage({
   searchParams?: Record<string, string | string[] | undefined>;
 }) {
   const session = await getSession();
-  const isPreview =
-    !params.id || params.id === "preview" || params.id === "undefined";
+  const isPreview = params.id === "preview" || params.id === "undefined";
 
   const getParam = (key: string) => {
     const value = searchParams?.[key];
@@ -57,45 +56,44 @@ export default async function OpportunityDetailPage({
     error = response.error;
   }
 
-  if (error && !isPreview) {
+  if (!isPreview && (error || !opportunity)) {
     return (
       <div className="max-w-[600px] mx-auto animate-fade-in">
         <p className="text-text-secondary">
-          Unable to load opportunity: {error.message}
+          Unable to load opportunity. Please return to the feed and try again.
         </p>
       </div>
     );
   }
 
-  const resolvedOpportunity = opportunity ?? {
-    ...mockOpportunity,
-    ...queryFallbackOpportunity,
-    id: "preview",
-    role_title: queryFallbackOpportunity.role_title ?? mockOpportunity.role_title ?? "Preview role",
-    company_name:
-      queryFallbackOpportunity.company_name ?? mockOpportunity.company_name ?? "Preview company",
-    description:
-      queryFallbackOpportunity.description ??
-      mockOpportunity.description ??
-      "Opportunity details coming soon.",
-    application_link:
-      queryFallbackOpportunity.application_link ??
-      mockOpportunity.application_link ??
-      "#",
-    went_live_at:
-      queryFallbackOpportunity.went_live_at ??
-      mockOpportunity.went_live_at ??
-      new Date().toISOString(),
-    source: queryFallbackOpportunity.source ?? mockOpportunity.source ?? "CMC",
-  };
-
-  if (!resolvedOpportunity) {
-    return (
-      <div className="max-w-[600px] mx-auto animate-fade-in">
-        <p className="text-text-secondary">Opportunity not found.</p>
-      </div>
-    );
-  }
+  const resolvedOpportunity = isPreview
+    ? {
+        ...mockOpportunity,
+        ...queryFallbackOpportunity,
+        id: "preview",
+        role_title:
+          queryFallbackOpportunity.role_title ??
+          mockOpportunity.role_title ??
+          "Preview role",
+        company_name:
+          queryFallbackOpportunity.company_name ??
+          mockOpportunity.company_name ??
+          "Preview company",
+        description:
+          queryFallbackOpportunity.description ??
+          mockOpportunity.description ??
+          "Opportunity details coming soon.",
+        application_link:
+          queryFallbackOpportunity.application_link ??
+          mockOpportunity.application_link ??
+          "#",
+        went_live_at:
+          queryFallbackOpportunity.went_live_at ??
+          mockOpportunity.went_live_at ??
+          new Date().toISOString(),
+        source: queryFallbackOpportunity.source ?? mockOpportunity.source ?? "CMC",
+      }
+    : opportunity;
 
   const studentId = session.student_id;
   const normalize = (value: string) => value.trim().toLowerCase();
@@ -348,7 +346,10 @@ export default async function OpportunityDetailPage({
       </div>
 
       <div className="mt-8 text-xs font-mono text-text-tertiary">
-        Posted {timeAgo(resolvedOpportunity.went_live_at)} · Via{" "}
+        <span className="text-text-secondary">
+          {formatPostedDate(resolvedOpportunity.went_live_at)}
+        </span>{" "}
+        · {cardPostedLabel(resolvedOpportunity.went_live_at)} · Via{" "}
         {resolvedOpportunity.source}
         {resolvedOpportunity.application_deadline ? (
           <span className="block">
