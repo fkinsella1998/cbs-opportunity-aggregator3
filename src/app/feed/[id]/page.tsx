@@ -56,21 +56,7 @@ export default async function OpportunityDetailPage({
     error = response.error;
   }
 
-  const hasQueryFallback =
-    Boolean(queryFallbackOpportunity.role_title) ||
-    Boolean(queryFallbackOpportunity.company_name);
-
-  if (!isPreview && (error || !opportunity) && !hasQueryFallback) {
-    return (
-      <div className="max-w-[600px] mx-auto animate-fade-in">
-        <p className="text-text-secondary">
-          Unable to load opportunity. Please return to the feed and try again.
-        </p>
-      </div>
-    );
-  }
-
-  const resolvedOpportunity = isPreview || !opportunity
+  const resolvedOpportunity = !opportunity
     ? {
         ...mockOpportunity,
         ...queryFallbackOpportunity,
