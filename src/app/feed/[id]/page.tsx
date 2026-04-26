@@ -56,7 +56,11 @@ export default async function OpportunityDetailPage({
     error = response.error;
   }
 
-  if (!isPreview && (error || !opportunity)) {
+  const hasQueryFallback =
+    Boolean(queryFallbackOpportunity.role_title) ||
+    Boolean(queryFallbackOpportunity.company_name);
+
+  if (!isPreview && (error || !opportunity) && !hasQueryFallback) {
     return (
       <div className="max-w-[600px] mx-auto animate-fade-in">
         <p className="text-text-secondary">
@@ -66,7 +70,7 @@ export default async function OpportunityDetailPage({
     );
   }
 
-  const resolvedOpportunity = isPreview
+  const resolvedOpportunity = isPreview || !opportunity
     ? {
         ...mockOpportunity,
         ...queryFallbackOpportunity,
