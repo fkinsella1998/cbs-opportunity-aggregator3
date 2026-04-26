@@ -110,6 +110,25 @@ export default function OnboardingPage() {
         onSubmit={handleSubmit}
         className="mx-auto w-full max-w-[520px] space-y-10 animate-fade-in"
       >
+        <div className="rounded border border-border bg-surface-raised px-5 py-4">
+          <p className="text-text text-sm font-medium">
+            Your profile powers your feed
+          </p>
+          <ul className="mt-3 space-y-2 text-text-secondary text-xs">
+            <li>
+              We use your industry and function interests to surface the most
+              relevant non-OCR roles.
+            </li>
+            <li>
+              Your visa sponsorship preference filters out roles that won’t
+              work for you.
+            </li>
+            <li>
+              Your resume (optional) helps us show where you have gaps for
+              specific roles.
+            </li>
+          </ul>
+        </div>
         <div>
           <button
             type="button"
