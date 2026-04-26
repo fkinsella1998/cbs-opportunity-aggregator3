@@ -98,7 +98,25 @@ export default async function OpportunityDetailPage({
   }
 
   const studentId = session.student_id;
-  const industryMatch = (resolvedOpportunity as { industry?: string }).industry ?? null;
+  const normalize = (value: string) => value.trim().toLowerCase();
+  const industryFallbackMap: Record<string, string> = {
+    finance: "Finance & FinTech",
+    strategy: "Technology",
+    operations: "Consumer & Retail",
+    marketing: "Media & Entertainment",
+    product: "Technology",
+    analytics: "Technology",
+    sustainability: "Climate & Energy",
+    "business development": "Technology",
+  };
+  const rawIndustry =
+    (resolvedOpportunity as { industry?: string }).industry ??
+    resolvedOpportunity.function ??
+    null;
+  const industryMatch =
+    rawIndustry && industryFallbackMap[normalize(rawIndustry)]
+      ? industryFallbackMap[normalize(rawIndustry)]
+      : rawIndustry;
 
   const [alumniRes, professorsRes, peersRes, bookmarkRes, applicationRes] =
     await Promise.all([
