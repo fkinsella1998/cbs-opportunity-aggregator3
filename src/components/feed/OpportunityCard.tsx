@@ -21,21 +21,24 @@ export default function OpportunityCard({
       new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const hasValidId = Boolean(opportunity.id) && opportunity.id !== "undefined";
   const safeId = hasValidId ? opportunity.id : "preview";
-  const query: Record<string, string> = {};
-  if (opportunity.role_title) query.role_title = opportunity.role_title;
-  if (opportunity.company_name) query.company_name = opportunity.company_name;
-  if (opportunity.description) query.description = opportunity.description;
-  if (opportunity.location) query.location = opportunity.location;
-  if (opportunity.function) query.function = opportunity.function;
-  if (opportunity.company_stage) query.company_stage = opportunity.company_stage;
-  if (opportunity.employment_type) query.employment_type = opportunity.employment_type;
+  const query = new URLSearchParams();
+  if (opportunity.role_title) query.set("role_title", opportunity.role_title);
+  if (opportunity.company_name) query.set("company_name", opportunity.company_name);
+  if (opportunity.description) query.set("description", opportunity.description);
+  if (opportunity.location) query.set("location", opportunity.location);
+  if (opportunity.function) query.set("function", opportunity.function);
+  if (opportunity.company_stage)
+    query.set("company_stage", opportunity.company_stage);
+  if (opportunity.employment_type)
+    query.set("employment_type", opportunity.employment_type);
   if (opportunity.application_link)
-    query.application_link = opportunity.application_link;
+    query.set("application_link", opportunity.application_link);
   if (opportunity.application_deadline)
-    query.application_deadline = opportunity.application_deadline;
-  if (opportunity.has_cbs_alumni) query.has_cbs_alumni = opportunity.has_cbs_alumni;
-  if (opportunity.source) query.source = opportunity.source;
-  if (opportunity.went_live_at) query.went_live_at = opportunity.went_live_at;
+    query.set("application_deadline", opportunity.application_deadline);
+  if (opportunity.has_cbs_alumni)
+    query.set("has_cbs_alumni", opportunity.has_cbs_alumni);
+  if (opportunity.source) query.set("source", opportunity.source);
+  if (opportunity.went_live_at) query.set("went_live_at", opportunity.went_live_at);
 
   const toggleBookmark = async (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -58,7 +61,7 @@ export default function OpportunityCard({
 
   return (
     <Link
-      href={{ pathname: `/feed/${safeId}`, query }}
+      href={`/feed/${safeId}?${query.toString()}`}
       className="block border-b border-border-subtle py-4 transition-colors hover:bg-surface-raised"
     >
       <div className="flex items-start justify-between gap-4">
