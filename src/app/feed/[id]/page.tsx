@@ -5,7 +5,7 @@ import { formatDeadline, timeAgo } from "@/lib/dates";
 import { buildMockOpportunities } from "@/lib/mock-opportunities";
 import { getSession } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase-server";
-import type { Professor } from "@/types";
+import type { PeerProfile, Professor } from "@/types";
 
 export default async function OpportunityDetailPage({
   params,
@@ -100,7 +100,8 @@ export default async function OpportunityDetailPage({
   const studentId = session.student_id;
   const industryMatch = (resolvedOpportunity as { industry?: string }).industry ?? null;
 
-  const [alumniRes, professorsRes, bookmarkRes, applicationRes] = await Promise.all([
+  const [alumniRes, professorsRes, peersRes, bookmarkRes, applicationRes] =
+    await Promise.all([
     supabaseServer
       .from("alumni")
       .select(
@@ -116,6 +117,15 @@ export default async function OpportunityDetailPage({
           )
           .contains("industry_tags", [industryMatch])
           .order("is_open_to_outreach", { ascending: false })
+          .limit(3)
+      : Promise.resolve({ data: [] }),
+    industryMatch
+      ? supabaseServer
+          .from("peers")
+          .select(
+            "peer_id, first_name, last_name, program, graduation_year, current_company, linkedin_url, industry_tags",
+          )
+          .contains("industry_tags", [industryMatch])
           .limit(3)
       : Promise.resolve({ data: [] }),
     studentId && opportunity
@@ -137,6 +147,7 @@ export default async function OpportunityDetailPage({
   ]);
   const alumni = alumniRes.data || [];
   const professors = (professorsRes.data as Professor[] | null) || [];
+  const peers = (peersRes.data as PeerProfile[] | null) || [];
   const mockAlumni = [
     {
       id: "preview-alum-1",
@@ -270,6 +281,38 @@ export default async function OpportunityDetailPage({
                   className="text-text-tertiary underline"
                 >
                   View Profile →
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="mt-8 border-t border-border-subtle pt-6">
+        <p className="font-mono text-xs tracking-[0.2em] text-text-tertiary uppercase">
+          Relevant Peers
+        </p>
+        {peers.length === 0 ? (
+          <p className="mt-3 text-text-tertiary text-sm">
+            No peer matches for this industry yet.
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2 text-text-secondary text-sm">
+            {peers.map((peer) => (
+              <li key={peer.peer_id}>
+                <span className="text-text">
+                  {peer.first_name} {peer.last_name}
+                </span>{" "}
+                · {peer.program}
+                {peer.graduation_year ? ` ‘${String(peer.graduation_year).slice(-2)}` : ""}
+                {peer.current_company ? ` · ${peer.current_company}` : ""} ·{" "}
+                <a
+                  href={peer.linkedin_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-text-tertiary underline"
+                >
+                  View LinkedIn →
                 </a>
               </li>
             ))}

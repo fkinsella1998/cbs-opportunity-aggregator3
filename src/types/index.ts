@@ -122,6 +122,17 @@ export interface Professor {
   is_open_to_outreach: boolean;
 }
 
+export interface PeerProfile {
+  peer_id: string;
+  first_name: string;
+  last_name: string;
+  program: string;
+  graduation_year?: number;
+  current_company?: string;
+  linkedin_url?: string;
+  industry_tags: string[];
+}
+
 export interface FeedFilters {
   industry?: string[];
   function?: string[];
