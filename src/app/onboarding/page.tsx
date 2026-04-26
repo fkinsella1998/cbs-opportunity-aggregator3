@@ -264,7 +264,7 @@ export default function OnboardingPage() {
         <Button
           type="submit"
           className="w-full"
-          disabled={!file || !graduationYear || loading}
+          disabled={!graduationYear || loading}
         >
           {loading ? "Saving..." : "Find my opportunities →"}
         </Button>

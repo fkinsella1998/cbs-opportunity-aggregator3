@@ -59,11 +59,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (res.ok) {
-      if (data.onboarding_done) {
-        router.push("/feed");
-      } else {
-        router.push("/onboarding");
-      }
+      router.push("/onboarding");
     } else {
       setError(data.error || "Invalid code.");
     }

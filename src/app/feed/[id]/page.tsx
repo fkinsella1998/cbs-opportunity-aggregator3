@@ -16,9 +16,10 @@ export default async function OpportunityDetailPage({
 }) {
   const session = await getSession();
   const isPreview = params.id === "preview" || params.id === "undefined";
+  const resolvedSearchParams = await Promise.resolve(searchParams);
 
   const getParam = (key: string) => {
-    const value = searchParams?.[key];
+    const value = resolvedSearchParams?.[key];
     return Array.isArray(value) ? value[0] : value;
   };
 
@@ -56,34 +57,32 @@ export default async function OpportunityDetailPage({
     error = response.error;
   }
 
-  const resolvedOpportunity = !opportunity
-    ? {
-        ...mockOpportunity,
-        ...queryFallbackOpportunity,
-        id: "preview",
-        role_title:
-          queryFallbackOpportunity.role_title ??
-          mockOpportunity.role_title ??
-          "Preview role",
-        company_name:
-          queryFallbackOpportunity.company_name ??
-          mockOpportunity.company_name ??
-          "Preview company",
-        description:
-          queryFallbackOpportunity.description ??
-          mockOpportunity.description ??
-          "Opportunity details coming soon.",
-        application_link:
-          queryFallbackOpportunity.application_link ??
-          mockOpportunity.application_link ??
-          "#",
-        went_live_at:
-          queryFallbackOpportunity.went_live_at ??
-          mockOpportunity.went_live_at ??
-          new Date().toISOString(),
-        source: queryFallbackOpportunity.source ?? mockOpportunity.source ?? "CMC",
-      }
-    : opportunity;
+  const hasQueryFallback =
+    Boolean(queryFallbackOpportunity.role_title) ||
+    Boolean(queryFallbackOpportunity.company_name) ||
+    Boolean(queryFallbackOpportunity.description);
+  const fallbackBase = hasQueryFallback ? queryFallbackOpportunity : mockOpportunity;
+
+  const resolvedOpportunity = opportunity ?? {
+    ...mockOpportunity,
+    ...fallbackBase,
+    id: "preview",
+    role_title:
+      fallbackBase.role_title ?? mockOpportunity.role_title ?? "Preview role",
+    company_name:
+      fallbackBase.company_name ?? mockOpportunity.company_name ?? "Preview company",
+    description:
+      fallbackBase.description ??
+      mockOpportunity.description ??
+      "Opportunity details coming soon.",
+    application_link:
+      fallbackBase.application_link ?? mockOpportunity.application_link ?? "#",
+    went_live_at:
+      fallbackBase.went_live_at ??
+      mockOpportunity.went_live_at ??
+      new Date().toISOString(),
+    source: fallbackBase.source ?? mockOpportunity.source ?? "CMC",
+  };
 
   const studentId = session.student_id;
   const normalize = (value: string) => value.trim().toLowerCase();
