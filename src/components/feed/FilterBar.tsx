@@ -47,6 +47,7 @@ export default function FilterBar() {
   const [selectedType, setSelectedType] = useState("All types");
   const [alumniOnly, setAlumniOnly] = useState(false);
   const [newThisWeek, setNewThisWeek] = useState(false);
+  const [showProfileHint, setShowProfileHint] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -57,9 +58,64 @@ export default function FilterBar() {
     setSelectedType(params.get("type") ?? "All types");
     setAlumniOnly(params.get("alumni") === "true");
     setNewThisWeek(params.get("new") === "true");
+    const touched = window.sessionStorage.getItem("feedFiltersTouched") === "true";
+    setShowProfileHint(!touched);
   }, []);
 
-  // Profile defaults removed so feed starts unfiltered.
+  useEffect(() => {
+    async function loadProfileDefaults() {
+      if (typeof window === "undefined") return;
+      const touched = window.sessionStorage.getItem("feedFiltersTouched") === "true";
+      const params = new URLSearchParams(window.location.search);
+      if (touched || params.toString().length > 0) {
+        setShowProfileHint(false);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/profile");
+        if (!res.ok) return;
+        const data = await res.json();
+        const profile = data.profile;
+        if (!profile) return;
+
+        let changed = false;
+
+        if (profile.industry_interests?.length) {
+          params.set("industry", profile.industry_interests[0]);
+          setSelectedIndustry(profile.industry_interests[0]);
+          changed = true;
+        }
+        if (profile.function_interests?.length) {
+          params.set("function", profile.function_interests[0]);
+          setSelectedFunction(profile.function_interests[0]);
+          changed = true;
+        }
+        if (profile.employment_type_pref) {
+          const mapping: Record<string, string> = {
+            full_time: "Full-time",
+            internship: "Internship",
+            both: "All types",
+          };
+          const nextType = mapping[profile.employment_type_pref] ?? "All types";
+          if (nextType !== "All types") {
+            params.set("type", nextType);
+          }
+          setSelectedType(nextType);
+          changed = true;
+        }
+
+        if (changed) {
+          updateUrl(params);
+          setShowProfileHint(true);
+        }
+      } catch (error) {
+        setShowProfileHint(false);
+      }
+    }
+
+    loadProfileDefaults();
+  }, [router]);
 
   const updateUrl = (next: URLSearchParams) => {
     router.replace(`/feed?${next.toString()}`);
@@ -77,6 +133,8 @@ export default function FilterBar() {
     }
     if (key === "alumni") setAlumniOnly(!current);
     if (key === "new") setNewThisWeek(!current);
+    window.sessionStorage.setItem("feedFiltersTouched", "true");
+    setShowProfileHint(false);
     updateUrl(next);
   };
 
@@ -94,6 +152,8 @@ export default function FilterBar() {
       if (key === "function") setSelectedFunction(value);
       if (key === "stage") setSelectedStage(value);
       if (key === "type") setSelectedType(value);
+      window.sessionStorage.setItem("feedFiltersTouched", "true");
+      setShowProfileHint(false);
       updateUrl(next);
     };
 
@@ -169,6 +229,11 @@ export default function FilterBar() {
           Reset filters
         </Link>
       </div>
+      {showProfileHint ? (
+        <p className="mt-3 text-xs text-text-tertiary">
+          Filters pre-set from your profile — adjust anytime.
+        </p>
+      ) : null}
     </div>
   );
 }
