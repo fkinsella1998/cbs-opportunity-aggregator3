@@ -103,6 +103,9 @@ export default function OnboardingPage() {
       return;
     }
 
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem("feedFiltersTouched");
+    }
     router.push("/feed");
   }
 

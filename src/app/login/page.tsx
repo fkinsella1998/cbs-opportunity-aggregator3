@@ -59,6 +59,9 @@ export default function LoginPage() {
     setLoading(false);
 
     if (res.ok) {
+      if (typeof window !== "undefined") {
+        window.sessionStorage.removeItem("feedFiltersTouched");
+      }
       router.push("/onboarding");
     } else {
       setError(data.error || "Invalid code.");
