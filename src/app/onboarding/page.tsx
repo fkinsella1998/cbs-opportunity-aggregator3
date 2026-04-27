@@ -61,21 +61,23 @@ export default function OnboardingPage() {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!file || !graduationYear) return;
+    if (!graduationYear) return;
 
     setLoading(true);
     setError("");
 
-    const formData = new FormData();
-    formData.append("file", file);
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const parseRes = await fetch("/api/resume/parse", {
-      method: "POST",
-      body: formData,
-    });
+      const parseRes = await fetch("/api/resume/parse", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (!parseRes.ok) {
-      setError("Resume uploaded. Parsing is skipped for the MVP.");
+      if (!parseRes.ok) {
+        setError("Resume uploaded. Parsing is skipped for the MVP.");
+      }
     }
 
     const profileRes = await fetch("/api/profile", {
@@ -152,10 +154,11 @@ export default function OnboardingPage() {
 
         <section className="space-y-4">
           <div>
-            <Label>Resume</Label>
+            <Label>Resume (optional)</Label>
             <p className="text-text-tertiary text-xs">PDF or Word doc</p>
             <p className="text-text-tertiary text-xs mt-1">
-              Used for future matching (not required for MVP).
+              Upload your resume to unlock gap analysis features in a future
+              release.
             </p>
           </div>
           <div className="border border-border border-dashed rounded px-4 py-6 text-center text-text-secondary text-sm">
@@ -261,11 +264,7 @@ export default function OnboardingPage() {
 
         {error ? <p className="text-destructive text-xs">{error}</p> : null}
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={!graduationYear || loading}
-        >
+        <Button type="submit" className="w-full" disabled={!graduationYear || loading}>
           {loading ? "Saving..." : "Find my opportunities →"}
         </Button>
       </form>
